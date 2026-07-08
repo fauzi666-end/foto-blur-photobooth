@@ -25,18 +25,11 @@ const TEMPLATES: {
   desc: string;
   recommendedFrames: number;
 }[] = [
-  { value: 'classic-strip-4', label: 'Classic Strip', desc: 'Strip vertikal seperti photobooth umumnya', recommendedFrames: 4 },
-  { value: 'grid-2x2', label: 'Grid 2x2', desc: 'Layout kotak 2x2', recommendedFrames: 4 },
-  { value: 'polaroid-3', label: 'Polaroid 3', desc: '3 polaroid bersebelahan', recommendedFrames: 3 },
-  { value: 'film-strip', label: 'Film Strip', desc: 'Seperti gulungan film', recommendedFrames: 5 },
-  { value: 'heart-shape', label: 'Heart Shape', desc: 'Kolase berbentuk hati', recommendedFrames: 8 },
-  { value: 'diagonal', label: 'Diagonal', desc: 'Layout diagonal dinamis', recommendedFrames: 5 },
-  { value: 'circle-grid', label: 'Circle Grid', desc: 'Foto berbentuk lingkaran', recommendedFrames: 9 },
-  { value: 'retro-35mm', label: 'Retro 35mm', desc: 'Gaya film jadul', recommendedFrames: 4 },
-  { value: 'polaroid-fun', label: 'Polaroid Fun', desc: 'Polaroid acak', recommendedFrames: 4 },
-  { value: 'flower', label: 'Flower', desc: 'Kolase seperti bunga', recommendedFrames: 7 },
-  { value: 'vintage', label: 'Vintage', desc: 'Gaya lawas', recommendedFrames: 4 },
-  { value: 'modern-minimal', label: 'Modern Minimal', desc: 'Bersih dan simpel', recommendedFrames: 4 },
+  { value: 'classic-strip-4', label: 'Classic Strip 4', desc: 'Strip vertikal 4 frame (photobooth asli)', recommendedFrames: 4 },
+  { value: 'classic-strip-3', label: 'Classic Strip 3', desc: 'Strip vertikal 3 frame', recommendedFrames: 3 },
+  { value: 'square-grid-2x2', label: 'Square Grid 2x2', desc: 'Layout kotak 4 frame', recommendedFrames: 4 },
+  { value: 'polaroid-strip', label: 'Polaroid Strip', desc: '3 polaroid bersebelahan', recommendedFrames: 3 },
+  { value: 'film-strip-simple', label: 'Film Strip', desc: 'Seperti gulungan film', recommendedFrames: 4 },
 ];
 
 export default function PhotoboothPage() {
