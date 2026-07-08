@@ -54,7 +54,7 @@ export const useAppStore = create<AppState>((set) => ({
   photoboothSettings: {
     frameCount: 4,
     countdownSeconds: 3,
-    template: 'classic-strip-4',
+    template: 'coquette-pink',
   },
   captures: [],
   setMode: (mode) => set({ mode }),

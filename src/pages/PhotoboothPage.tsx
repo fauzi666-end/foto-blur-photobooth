@@ -25,12 +25,12 @@ const TEMPLATES: {
   desc: string;
   recommendedFrames: number;
 }[] = [
-  { value: 'classic-strip-4', label: 'Classic Strip 4', desc: 'Strip vertikal 4 foto dengan confetti', recommendedFrames: 4 },
-  { value: 'classic-strip-3', label: 'Classic Strip 3', desc: 'Strip vertikal 3 foto dengan hearts', recommendedFrames: 3 },
-  { value: 'square-grid-2x2', label: 'Square Grid', desc: 'Layout kotak 2x2 dengan bintang', recommendedFrames: 4 },
-  { value: 'polaroid-strip', label: 'Polaroid Strip', desc: '3 polaroid bergoyang', recommendedFrames: 3 },
-  { value: 'film-strip-simple', label: 'Film Strip', desc: 'Seperti gulungan film retro', recommendedFrames: 4 },
-  { value: 'love-party', label: 'Love Party', desc: 'Template cinta dengan confetti', recommendedFrames: 4 },
+  { value: 'coquette-pink', label: 'Coquette Pink', desc: '🎀 Strip pink coquette dengan hearts & confetti', recommendedFrames: 4 },
+  { value: 'retro-film', label: 'Retro Film', desc: '🎞️ Strip seperti gulungan film retro', recommendedFrames: 4 },
+  { value: 'pastel-dream', label: 'Pastel Dream', desc: '🌈 Strip gradient pastel yang manis', recommendedFrames: 4 },
+  { value: 'starry-night', label: 'Starry Night', desc: '🌙 Strip malam dengan bintang-bintang', recommendedFrames: 4 },
+  { value: 'love-heart', label: 'Love Heart', desc: '💕 Strip dengan tema cinta', recommendedFrames: 4 },
+  { value: 'birthday-party', label: 'Birthday Party', desc: '🎂 Strip ulang tahun yang meriah', recommendedFrames: 4 },
 ];
 
 export default function PhotoboothPage() {

@@ -1,10 +1,10 @@
 export type PhotoboothTemplate = 
-  | 'classic-strip-4'
-  | 'classic-strip-3'
-  | 'square-grid-2x2'
-  | 'polaroid-strip'
-  | 'film-strip-simple'
-  | 'love-party';
+  | 'coquette-pink'
+  | 'retro-film'
+  | 'pastel-dream'
+  | 'starry-night'
+  | 'love-heart'
+  | 'birthday-party'
 
 export function captureVideoFrame(video: HTMLVideoElement) {
   const canvas = document.createElement('canvas');
@@ -22,10 +22,10 @@ export function captureVideoFrame(video: HTMLVideoElement) {
 
 function loadImage(source: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('Gagal memuat frame photobooth.'));
-    image.src = source;
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Gagal memuat frame photobooth.'));
+    img.src = source;
   });
 }
 
@@ -67,24 +67,19 @@ function drawPhotoFrame(
   shadow: boolean = true
 ) {
   if (shadow) {
-    ctx.shadowColor = 'rgba(0,0,0,0.2)';
-    ctx.shadowBlur = 12;
-    ctx.shadowOffsetX = 3;
-    ctx.shadowOffsetY = 3;
+    ctx.shadowColor = 'rgba(0,0,0,0.15)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
   }
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.roundRect(x, y, w, h, 16);
+  ctx.roundRect(x, y, w, h, 12);
   ctx.fill();
   ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
   ctx.shadowOffsetX = 0;
   ctx.shadowOffsetY = 0;
-  ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.roundRect(x + 5, y + 5, w - 10, h - 10, 12);
-  ctx.stroke();
 }
 
 function drawConfetti(
@@ -92,19 +87,19 @@ function drawConfetti(
   width: number,
   height: number
 ) {
-  const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd'];
+  const colors = ['#ffb6c1', '#ffd1dc', '#ff69b4', '#ffc0cb', '#ff6b6b', '#ffe4e1'];
   ctx.save();
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 60; i++) {
     const x = Math.random() * width;
     const y = Math.random() * height;
-    const size = Math.random() * 8 + 4;
+    const size = Math.random() * 6 + 3;
     const rotation = Math.random() * Math.PI * 2;
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(rotation);
     ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
     ctx.beginPath();
-    ctx.roundRect(-size/2, -size/2, size, size * 0.6, 2);
+    ctx.roundRect(-size/2, -size/2, size, size * 0.6, 1);
     ctx.fill();
     ctx.restore();
   }
@@ -117,15 +112,15 @@ function drawHearts(
   height: number
 ) {
   ctx.save();
-  ctx.font = '32px Arial';
+  ctx.font = '28px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  const hearts = ['❤️', '💕', '💖', '💗'];
-  for (let i = 0; i < 15; i++) {
+  const hearts = ['❤️', '💕', '💗', '💖', '🩷', '🤍'];
+  for (let i = 0; i < 18; i++) {
     const x = Math.random() * width;
     const y = Math.random() * height;
-    const size = 16 + Math.random() * 20;
-    const rotation = (Math.random() - 0.5) * 0.5;
+    const size = 14 + Math.random() * 16;
+    const rotation = (Math.random() - 0.5) * 0.4;
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(rotation);
@@ -143,11 +138,11 @@ function drawStars(
 ) {
   ctx.save();
   const stars = ['✨', '⭐', '🌟', '💫'];
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 14; i++) {
     const x = Math.random() * width;
     const y = Math.random() * height;
-    const size = 14 + Math.random() * 18;
-    const rotation = (Math.random() - 0.5) * 0.6;
+    const size = 12 + Math.random() * 14;
+    const rotation = (Math.random() - 0.5) * 0.5;
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(rotation);
@@ -165,7 +160,7 @@ function drawText(
   text: string,
   x: number,
   y: number,
-  size: number = 24,
+  size: number = 22,
   color: string = '#333333'
 ) {
   ctx.save();
@@ -177,170 +172,163 @@ function drawText(
   ctx.restore();
 }
 
-function drawClassicStrip4(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, width, height);
-  drawConfetti(ctx, width, height);
-  
-  const padding = 40;
-  const gap = 35;
-  const frameWidth = width - padding * 2;
-  const frameHeight = (height - padding * 2 - gap * 3) / 4;
-  
-  for (let i = 0; i < Math.min(images.length, 4); i++) {
-    const x = padding;
-    const y = padding + i * (frameHeight + gap);
-    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight);
-    drawImageCover(ctx, images[i], x + 14, y + 14, frameWidth - 28, frameHeight - 28);
-  }
-  
-  drawText(ctx, 'Photobooth', width / 2, height - 25, 20, '#ff6b81');
-}
-
-function drawClassicStrip3(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  ctx.fillStyle = '#fff5f7';
-  ctx.fillRect(0, 0, width, height);
-  drawHearts(ctx, width, height);
-  
-  const padding = 45;
-  const gap = 40;
-  const frameWidth = width - padding * 2;
-  const frameHeight = (height - padding * 2 - gap * 2) / 3;
-  
-  for (let i = 0; i < Math.min(images.length, 3); i++) {
-    const x = padding;
-    const y = padding + i * (frameHeight + gap);
-    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight);
-    drawImageCover(ctx, images[i], x + 14, y + 14, frameWidth - 28, frameHeight - 28);
-  }
-  
-  drawText(ctx, '💖 Memories 💖', width / 2, height - 28, 22, '#ff4757');
-}
-
-function drawSquareGrid2x2(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, width, height);
-  drawStars(ctx, width, height);
-  
-  const padding = 45;
-  const gap = 35;
-  const frameSize = (width - padding * 2 - gap) / 2;
-  
-  for (let i = 0; i < Math.min(images.length, 4); i++) {
-    const row = Math.floor(i / 2);
-    const col = i % 2;
-    const x = padding + col * (frameSize + gap);
-    const y = padding + row * (frameSize + gap);
-    drawPhotoFrame(ctx, x, y, frameSize, frameSize);
-    drawImageCover(ctx, images[i], x + 14, y + 14, frameSize - 28, frameSize - 28);
-  }
-}
-
-function drawPolaroidStrip(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  ctx.fillStyle = '#f8f9fa';
-  ctx.fillRect(0, 0, width, height);
-  
-  const padding = 35;
-  const gap = 25;
-  const polaroidWidth = (width - padding * 2 - gap * 2) / 3;
-  const polaroidHeight = polaroidWidth * 1.35;
-  const startY = (height - polaroidHeight) / 2;
-  
-  for (let i = 0; i < Math.min(images.length, 3); i++) {
-    const x = padding + i * (polaroidWidth + gap);
-    const y = startY + (i === 1 ? 15 : (i === 0 ? -12 : 8));
-    
-    ctx.save();
-    ctx.translate(x + polaroidWidth/2, y + polaroidHeight/2);
-    ctx.rotate((i - 1) * 0.08);
-    ctx.translate(-polaroidWidth/2, -polaroidHeight/2);
-    
-    ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = 'rgba(0,0,0,0.25)';
-    ctx.shadowBlur = 15;
-    ctx.shadowOffsetY = 6;
-    ctx.beginPath();
-    ctx.roundRect(0, 0, polaroidWidth, polaroidHeight, 8);
-    ctx.fill();
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetY = 0;
-    
-    const photoSize = polaroidWidth - 24;
-    drawImageCover(ctx, images[i], 12, 14, photoSize, photoSize);
-    ctx.restore();
-  }
-}
-
-function drawFilmStripSimple(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(0, 0, width, height);
-  
-  ctx.fillStyle = '#000000';
-  for (let i = 0; i < 15; i++) {
-    const x = 10 + i * (width / 14);
-    ctx.beginPath();
-    ctx.arc(x, 20, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(x, height - 20, 6, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  
-  const padding = 55;
-  const frameWidth = (width - padding * 2) / 4;
-  const frameHeight = height - padding * 2;
-  
-  for (let i = 0; i < Math.min(images.length, 4); i++) {
-    const x = padding + i * frameWidth;
-    const y = padding;
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.roundRect(x + 6, y + 6, frameWidth - 12, frameHeight - 12, 6);
-    ctx.fill();
-    drawImageCover(ctx, images[i], x + 12, y + 12, frameWidth - 24, frameHeight - 24);
-  }
-}
-
-function drawLoveParty(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
+function drawCoquettePink(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   const bg = ctx.createLinearGradient(0, 0, 0, height);
-  bg.addColorStop(0, '#ffd1dc');
-  bg.addColorStop(1, '#ffe4ec');
+  bg.addColorStop(0, '#ffe4ec');
+  bg.addColorStop(0.5, '#ffd1dc');
+  bg.addColorStop(1, '#ffb6c1');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, width, height);
   drawConfetti(ctx, width, height);
   drawHearts(ctx, width, height);
-  
-  const padding = 45;
+
+  const padding = 35;
   const gap = 30;
   const frameWidth = width - padding * 2;
   const frameHeight = (height - padding * 2 - gap * 3) / 4;
-  
+
   for (let i = 0; i < Math.min(images.length, 4); i++) {
     const x = padding;
     const y = padding + i * (frameHeight + gap);
-    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#fff5f7');
-    drawImageCover(ctx, images[i], x + 14, y + 14, frameWidth - 28, frameHeight - 28);
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight);
+    drawImageCover(ctx, images[i], x + 10, y + 10, frameWidth - 20, frameHeight - 20);
   }
+
+  drawText(ctx, '🎀 Memori 🎀', width / 2, height - 28, 24, '#ff4757');
+}
+
+function drawRetroFilm(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(0, 0, width, height);
   
-  drawText(ctx, '❤️ Love is in the air ❤️', width / 2, height - 28, 22, '#ff4757');
+  ctx.fillStyle = '#2d2d2d';
+  for (let i = 0; i < 12; i++) {
+    const x = 15 + i * (width / 11);
+    ctx.beginPath();
+    ctx.arc(x, 18, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, height - 18, 6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const padding = 45;
+  const gap = 25;
+  const frameWidth = width - padding * 2;
+  const frameHeight = (height - padding * 2 - gap * 3) / 4;
+
+  for (let i = 0; i < Math.min(images.length, 4); i++) {
+    const x = padding;
+    const y = padding + i * (frameHeight + gap);
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.roundRect(x, y, frameWidth, frameHeight, 8);
+    ctx.fill();
+    drawImageCover(ctx, images[i], x + 8, y + 8, frameWidth - 16, frameHeight - 16);
+  }
+}
+
+function drawPastelDream(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
+  const bg = ctx.createLinearGradient(0, 0, width, 0);
+  bg.addColorStop(0, '#ffecd2');
+  bg.addColorStop(0.25, '#fcb69f');
+  bg.addColorStop(0.5, '#ffecd2');
+  bg.addColorStop(0.75, '#a8edea');
+  bg.addColorStop(1, '#fed6e3');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, width, height);
+  drawConfetti(ctx, width, height);
+
+  const padding = 35;
+  const gap = 30;
+  const frameWidth = width - padding * 2;
+  const frameHeight = (height - padding * 2 - gap * 3) / 4;
+
+  for (let i = 0; i < Math.min(images.length, 4); i++) {
+    const x = padding;
+    const y = padding + i * (frameHeight + gap);
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#ffffff');
+    drawImageCover(ctx, images[i], x + 10, y + 10, frameWidth - 20, frameHeight - 20);
+  }
+
+  drawText(ctx, '✨ ✨', width / 2, height - 28, 26, '#ffffff');
+}
+
+function drawStarryNight(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
+  const bg = ctx.createLinearGradient(0, 0, 0, height);
+  bg.addColorStop(0, '#2c3e50');
+  bg.addColorStop(1, '#4ca1af');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, width, height);
+  drawStars(ctx, width, height);
+
+  const padding = 35;
+  const gap = 30;
+  const frameWidth = width - padding * 2;
+  const frameHeight = (height - padding * 2 - gap * 3) / 4;
+
+  for (let i = 0; i < Math.min(images.length, 4); i++) {
+    const x = padding;
+    const y = padding + i * (frameHeight + gap);
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#ecf0f1');
+    drawImageCover(ctx, images[i], x + 10, y + 10, frameWidth - 20, frameHeight - 20);
+  }
+
+  drawText(ctx, '🌙', width / 2, height - 28, 28, '#ffffff');
+}
+
+function drawLoveHeart(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
+  ctx.fillStyle = '#fff0f5';
+  ctx.fillRect(0, 0, width, height);
+  drawHearts(ctx, width, height);
+  drawConfetti(ctx, width, height);
+
+  const padding = 35;
+  const gap = 30;
+  const frameWidth = width - padding * 2;
+  const frameHeight = (height - padding * 2 - gap * 3) / 4;
+
+  for (let i = 0; i < Math.min(images.length, 4); i++) {
+    const x = padding;
+    const y = padding + i * (frameHeight + gap);
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#ffe4e1');
+    drawImageCover(ctx, images[i], x + 10, y + 10, frameWidth - 20, frameHeight - 20);
+  }
+
+  drawText(ctx, '💕', width / 2, height - 28, 24, '#ff69b4');
+}
+
+function drawBirthdayParty(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
+  const bg = ctx.createLinearGradient(0, 0, 0, height);
+  bg.addColorStop(0, '#f093fb');
+  bg.addColorStop(1, '#f5576c');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, width, height);
+  drawConfetti(ctx, width, height);
+  drawStars(ctx, width, height);
+  drawHearts(ctx, width, height);
+
+  const padding = 35;
+  const gap = 30;
+  const frameWidth = width - padding * 2;
+  const frameHeight = (height - padding * 2 - gap * 3) / 4;
+
+  for (let i = 0; i < Math.min(images.length, 4); i++) {
+    const x = padding;
+    const y = padding + i * (frameHeight + gap);
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#ffffff');
+    drawImageCover(ctx, images[i], x + 10, y + 10, frameWidth - 20, frameHeight - 20);
+  }
+
+  drawText(ctx, '🎂 HBD 🎂', width / 2, height - 28, 24, '#ffffff');
 }
 
 export async function buildPhotoboothStrip(
   frames: string[],
   template: PhotoboothTemplate,
 ) {
-  let width = 420;
-  let height = 900;
-
-  switch (template) {
-    case 'classic-strip-4': width = 420; height = 900; break;
-    case 'classic-strip-3': width = 420; height = 750; break;
-    case 'square-grid-2x2': width = 680; height = 680; break;
-    case 'polaroid-strip': width = 880; height = 580; break;
-    case 'film-strip-simple': width = 920; height = 420; break;
-    case 'love-party': width = 420; height = 900; break;
-  }
+  const width = 450;
+  const height = 1125;
 
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -352,13 +340,13 @@ export async function buildPhotoboothStrip(
   const images = await Promise.all(frames.map(loadImage));
 
   switch (template) {
-    case 'classic-strip-4': drawClassicStrip4(context, images, width, height); break;
-    case 'classic-strip-3': drawClassicStrip3(context, images, width, height); break;
-    case 'square-grid-2x2': drawSquareGrid2x2(context, images, width, height); break;
-    case 'polaroid-strip': drawPolaroidStrip(context, images, width, height); break;
-    case 'film-strip-simple': drawFilmStripSimple(context, images, width, height); break;
-    case 'love-party': drawLoveParty(context, images, width, height); break;
-    default: drawClassicStrip4(context, images, width, height);
+    case 'coquette-pink': drawCoquettePink(context, images, width, height); break;
+    case 'retro-film': drawRetroFilm(context, images, width, height); break;
+    case 'pastel-dream': drawPastelDream(context, images, width, height); break;
+    case 'starry-night': drawStarryNight(context, images, width, height); break;
+    case 'love-heart': drawLoveHeart(context, images, width, height); break;
+    case 'birthday-party': drawBirthdayParty(context, images, width, height); break;
+    default: drawCoquettePink(context, images, width, height); break;
   }
 
   return canvas;
@@ -366,17 +354,8 @@ export async function buildPhotoboothStrip(
 
 export function buildTemplatePreview(template: PhotoboothTemplate): string {
   const canvas = document.createElement('canvas');
-  let width = 220;
-  let height = 340;
-
-  switch (template) {
-    case 'classic-strip-4': width = 220; height = 340; break;
-    case 'classic-strip-3': width = 220; height = 280; break;
-    case 'square-grid-2x2': width = 220; height = 220; break;
-    case 'polaroid-strip': width = 300; height = 180; break;
-    case 'film-strip-simple': width = 300; height = 140; break;
-    case 'love-party': width = 220; height = 340; break;
-  }
+  const width = 240;
+  const height = 600;
 
   canvas.width = width;
   canvas.height = height;
@@ -388,103 +367,117 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
   const drawDummy = (x: number, y: number, w: number, h: number, idx: number) => {
     ctx.fillStyle = colors[idx % colors.length];
     ctx.beginPath();
-    ctx.roundRect(x, y, w, h, 10);
+    ctx.roundRect(x, y, w, h, 8);
     ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.font = `${Math.min(w, h)/4}px Arial`;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = `${Math.min(w, h)/3.5}px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('📷', x + w/2, y + h/2);
+    ctx.fillText('📸', x + w/2, y + h/2);
   };
 
   switch (template) {
-    case 'classic-strip-4':
-      ctx.fillStyle = '#ffffff';
+    case 'coquette-pink':
+      const bg1 = ctx.createLinearGradient(0, 0, 0, height);
+      bg1.addColorStop(0, '#ffe4ec');
+      bg1.addColorStop(0.5, '#ffd1dc');
+      bg1.addColorStop(1, '#ffb6c1');
+      ctx.fillStyle = bg1;
       ctx.fillRect(0, 0, width, height);
-      const pad1 = 20, gap1 = 15, fw1 = width - pad1*2, fh1 = (height - pad1*2 - gap1*3)/4;
+      const pad1 = 20, gap1 = 18, fw1 = width - pad1*2, fh1 = (height - pad1*2 - gap1*3)/4;
       for (let i = 0; i < 4; i++) {
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.roundRect(pad1, pad1 + i*(fh1 + gap1), fw1, fh1, 8);
+        ctx.roundRect(pad1, pad1 + i*(fh1+gap1), fw1, fh1, 8);
         ctx.fill();
-        drawDummy(pad1 + 8, pad1 + 8 + i*(fh1 + gap1), fw1 - 16, fh1 - 16, i);
+        drawDummy(pad1+7, pad1+7 + i*(fh1+gap1), fw1-14, fh1-14, i);
       }
       break;
 
-    case 'classic-strip-3':
-      ctx.fillStyle = '#fff5f7';
-      ctx.fillRect(0, 0, width, height);
-      const pad2 = 22, gap2 = 18, fw2 = width - pad2*2, fh2 = (height - pad2*2 - gap2*2)/3;
-      for (let i = 0; i < 3; i++) {
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(pad2, pad2 + i*(fh2 + gap2), fw2, fh2, 8);
-        ctx.fill();
-        drawDummy(pad2 + 8, pad2 + 8 + i*(fh2 + gap2), fw2 - 16, fh2 - 16, i);
-      }
-      break;
-
-    case 'square-grid-2x2':
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, width, height);
-      const pad3 = 22, gap3 = 15, fs3 = (width - pad3*2 - gap3)/2;
-      for (let i = 0; i < 4; i++) {
-        const r = Math.floor(i / 2), c = i % 2;
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(pad3 + c*(fs3 + gap3), pad3 + r*(fs3 + gap3), fs3, fs3, 8);
-        ctx.fill();
-        drawDummy(pad3 + 8 + c*(fs3 + gap3), pad3 + 8 + r*(fs3 + gap3), fs3 - 16, fs3 - 16, i);
-      }
-      break;
-
-    case 'polaroid-strip':
-      ctx.fillStyle = '#f8f9fa';
-      ctx.fillRect(0, 0, width, height);
-      const pad4 = 20, gap4 = 12, pw4 = (width - pad4*2 - gap4*2)/3, ph4 = pw4 * 1.35;
-      const sy4 = (height - ph4)/2;
-      for (let i = 0; i < 3; i++) {
-        const x = pad4 + i*(pw4 + gap4), y = sy4 + (i === 1 ? 10 : (i === 0 ? -8 : 6));
-        ctx.save();
-        ctx.translate(x + pw4/2, y + ph4/2);
-        ctx.rotate((i - 1) * 0.06);
-        ctx.translate(-pw4/2, -ph4/2);
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(0, 0, pw4, ph4, 6);
-        ctx.fill();
-        const ps4 = pw4 - 18;
-        drawDummy(9, 11, ps4, ps4, i);
-        ctx.restore();
-      }
-      break;
-
-    case 'film-strip-simple':
+    case 'retro-film':
       ctx.fillStyle = '#1a1a1a';
       ctx.fillRect(0, 0, width, height);
-      const pad5 = 20, fw5 = (width - pad5*2)/4, fh5 = height - pad5*2;
+      ctx.fillStyle = '#2d2d2d';
+      for (let i = 0; i < 8; i++) {
+        const x = 12 + i * (width / 7);
+        ctx.beginPath();
+        ctx.arc(x, 14, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, height - 14, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      const pad2 = 25, gap2 = 15, fw2 = width - pad2*2, fh2 = (height - pad2*2 - gap2*3)/4;
       for (let i = 0; i < 4; i++) {
         ctx.fillStyle = '#000000';
         ctx.beginPath();
-        ctx.roundRect(pad5 + i*fw5 + 4, pad5 + 4, fw5 - 8, fh5 - 8, 4);
+        ctx.roundRect(pad2, pad2 + i*(fh2+gap2), fw2, fh2, 6);
         ctx.fill();
-        drawDummy(pad5 + i*fw5 + 8, pad5 + 8, fw5 - 16, fh5 - 16, i);
+        drawDummy(pad2+6, pad2+6 + i*(fh2+gap2), fw2-12, fh2-12, i);
       }
       break;
 
-    case 'love-party':
+    case 'pastel-dream':
+      const bg3 = ctx.createLinearGradient(0, 0, width, 0);
+      bg3.addColorStop(0, '#ffecd2');
+      bg3.addColorStop(0.25, '#fcb69f');
+      bg3.addColorStop(0.5, '#ffecd2');
+      bg3.addColorStop(0.75, '#a8edea');
+      bg3.addColorStop(1, '#fed6e3');
+      ctx.fillStyle = bg3;
+      ctx.fillRect(0, 0, width, height);
+      const pad3 = 20, gap3 = 18, fw3 = width - pad3*2, fh3 = (height - pad3*2 - gap3*3)/4;
+      for (let i = 0; i < 4; i++) {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(pad3, pad3 + i*(fh3+gap3), fw3, fh3, 8);
+        ctx.fill();
+        drawDummy(pad3+7, pad3+7 + i*(fh3+gap3), fw3-14, fh3-14, i);
+      }
+      break;
+
+    case 'starry-night':
+      const bg4 = ctx.createLinearGradient(0, 0, 0, height);
+      bg4.addColorStop(0, '#2c3e50');
+      bg4.addColorStop(1, '#4ca1af');
+      ctx.fillStyle = bg4;
+      ctx.fillRect(0, 0, width, height);
+      const pad4 = 20, gap4 = 18, fw4 = width - pad4*2, fh4 = (height - pad4*2 - gap4*3)/4;
+      for (let i = 0; i < 4; i++) {
+        ctx.fillStyle = '#ecf0f1';
+        ctx.beginPath();
+        ctx.roundRect(pad4, pad4 + i*(fh4+gap4), fw4, fh4, 8);
+        ctx.fill();
+        drawDummy(pad4+7, pad4+7 + i*(fh4+gap4), fw4-14, fh4-14, i);
+      }
+      break;
+
+    case 'love-heart':
+      ctx.fillStyle = '#fff0f5';
+      ctx.fillRect(0, 0, width, height);
+      const pad5 = 20, gap5 = 18, fw5 = width - pad5*2, fh5 = (height - pad5*2 - gap5*3)/4;
+      for (let i = 0; i < 4; i++) {
+        ctx.fillStyle = '#ffe4e1';
+        ctx.beginPath();
+        ctx.roundRect(pad5, pad5 + i*(fh5+gap5), fw5, fh5, 8);
+        ctx.fill();
+        drawDummy(pad5+7, pad5+7 + i*(fh5+gap5), fw5-14, fh5-14, i);
+      }
+      break;
+
+    case 'birthday-party':
       const bg6 = ctx.createLinearGradient(0, 0, 0, height);
-      bg6.addColorStop(0, '#ffd1dc');
-      bg6.addColorStop(1, '#ffe4ec');
+      bg6.addColorStop(0, '#f093fb');
+      bg6.addColorStop(1, '#f5576c');
       ctx.fillStyle = bg6;
       ctx.fillRect(0, 0, width, height);
-      const pad6 = 20, gap6 = 15, fw6 = width - pad6*2, fh6 = (height - pad6*2 - gap6*3)/4;
+      const pad6 = 20, gap6 = 18, fw6 = width - pad6*2, fh6 = (height - pad6*2 - gap6*3)/4;
       for (let i = 0; i < 4; i++) {
-        ctx.fillStyle = '#fff5f7';
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.roundRect(pad6, pad6 + i*(fh6 + gap6), fw6, fh6, 8);
+        ctx.roundRect(pad6, pad6 + i*(fh6+gap6), fw6, fh6, 8);
         ctx.fill();
-        drawDummy(pad6 + 8, pad6 + 8 + i*(fh6 + gap6), fw6 - 16, fh6 - 16, i);
+        drawDummy(pad6+7, pad6+7 + i*(fh6+gap6), fw6-14, fh6-14, i);
       }
       break;
   }
