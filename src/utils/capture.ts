@@ -64,259 +64,276 @@ function drawImageCover(
   ctx.drawImage(img, x + offsetX, y + offsetY, drawWidth, drawHeight);
 }
 
-// Helper untuk membuat frame bayangan
-function drawShadowFrame(
+// Helper untuk membuat frame bayangan + border putih
+function drawPhotoFrame(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   w: number,
   h: number,
-  bgColor: string = '#ffffff'
+  borderWidth: number = 8,
+  borderRadius: number = 12
 ) {
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+  // Shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.3)';
   ctx.shadowBlur = 15;
   ctx.shadowOffsetX = 5;
   ctx.shadowOffsetY = 5;
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(x, y, w, h);
+  
+  // White border
+  ctx.fillStyle = '#ffffff';
+  roundRect(ctx, x, y, w, h, borderRadius);
+  ctx.fill();
+  
   ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
   ctx.shadowOffsetX = 0;
   ctx.shadowOffsetY = 0;
+  
+  // Inner border
+  ctx.strokeStyle = '#f0f0f0';
+  ctx.lineWidth = 2;
+  roundRect(ctx, x + borderWidth/2, y + borderWidth/2, w - borderWidth, h - borderWidth, borderRadius - 4);
+  ctx.stroke();
 }
 
-// Helper untuk menggambar stiker emoji lucu
-function drawCuteSticker(
+// Helper untuk rounded rect
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// Helper untuk menggambar stiker
+function drawSticker(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   size: number,
-  sticker: string
+  sticker: string,
+  rotation: number = 0
 ) {
-  ctx.font = `${size}px Arial`;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(rotation);
+  ctx.font = `bold ${size}px Arial`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(sticker, x, y);
+  ctx.fillText(sticker, 0, 0);
+  ctx.restore();
 }
 
-// Helper untuk menggambar polka dot background
+// Helper untuk polkadot background
 function drawPolkaDotBackground(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  dotColor: string = 'rgba(255,105,180,0.3)',
+  dotColor: string = 'rgba(255,105,180,0.25)',
   dotSize: number = 15,
   spacing: number = 40
 ) {
-  for (let x = 0; x < width; x += spacing) {
-    for (let y = 0; y < height; y += spacing) {
+  ctx.fillStyle = dotColor;
+  for (let row = 0; row < height/spacing + 1; row++) {
+    for (let col = 0; col < width/spacing + 1; col++) {
+      const offsetX = (row % 2) * (spacing/2);
       ctx.beginPath();
-      ctx.arc(x + (y % spacing === 0 ? spacing / 2 : 0), y, dotSize, 0, Math.PI * 2);
-      ctx.fillStyle = dotColor;
+      ctx.arc(col * spacing + offsetX, row * spacing, dotSize, 0, Math.PI * 2);
       ctx.fill();
     }
   }
 }
 
-// Helper untuk menggambar bintang-bintang kecil
-function drawStars(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  count: number = 20
-) {
-  const stars = ['✨', '⭐', '🌟', '💫'];
-  for (let i = 0; i < count; i++) {
-    const x = Math.random() * width;
-    const y = Math.random() * height;
-    const size = 12 + Math.random() * 10;
-    const star = stars[Math.floor(Math.random() * stars.length)];
-    drawCuteSticker(ctx, x, y, size, star);
-  }
-}
-
-// Helper untuk menggambar confetti
-function drawConfetti(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number
-) {
-  const colors = ['#ff69b4', '#ffd700', '#87ceeb', '#98fb98', '#dda0dd'];
-  for (let i = 0; i < 30; i++) {
-    const x = Math.random() * width;
-    const y = Math.random() * height;
-    const size = 5 + Math.random() * 10;
-    ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(Math.random() * Math.PI);
-    ctx.fillRect(-size / 2, -size / 2, size, size * 0.6);
-    ctx.restore();
-  }
-}
-
-// Template 1: Classic 4x1 Strip (Photobooth Umumnya)
+// Template 1: Classic Strip 4 (Photobooth Asli)
 function drawClassicStrip4(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  // Background gradient pink lembut + polka dot
+  // Background gradient pink cantik
   const bg = ctx.createLinearGradient(0, 0, 0, height);
-  bg.addColorStop(0, '#fff0f5');
-  bg.addColorStop(1, '#ffe4e1');
+  bg.addColorStop(0, '#ffe4ec');
+  bg.addColorStop(1, '#ffc9da');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, width, height);
-  drawPolkaDotBackground(ctx, width, height, 'rgba(255,182,193,0.4)', 10, 35);
-
+  drawPolkaDotBackground(ctx, width, height, 'rgba(255,255,255,0.4)', 10, 35);
+  
   const padding = 30;
-  const gap = 20;
+  const gap = 25;
   const availableHeight = height - padding * 2;
-  const photoHeight = (availableHeight - gap * 3) / 4;
-  const photoWidth = width - padding * 2;
-
+  const frameHeight = (availableHeight - gap * 3) / 4;
+  const frameWidth = width - padding * 2;
+  
+  // Draw frames
   for (let i = 0; i < Math.min(images.length, 4); i++) {
     const x = padding;
-    const y = padding + i * (photoHeight + gap);
+    const y = padding + i * (frameHeight + gap);
     
-    drawShadowFrame(ctx, x, y, photoWidth, photoHeight);
-    ctx.strokeStyle = '#ff69b4';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(x + 5, y + 5, photoWidth - 10, photoHeight - 10);
-    drawImageCover(ctx, images[i], x + 10, y + 10, photoWidth - 20, photoHeight - 20);
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight);
+    drawImageCover(ctx, images[i], x + 12, y + 12, frameWidth - 24, frameHeight - 24);
   }
-
-  // Tambahkan stiker lucu di pinggir
-  const stickers = ['❤️', '😊', '✨', '🌸', '🎉'];
-  for (let i = 0; i < 5; i++) {
-    const sx = 20 + Math.random() * (width - 40);
-    const sy = 20 + Math.random() * (height - 40);
-    drawCuteSticker(ctx, sx, sy, 25, stickers[i]);
-  }
+  
+  // Cute stickers
+  drawSticker(ctx, 40, height - 40, 28, '❤️', -0.2);
+  drawSticker(ctx, width - 40, 40, 28, '✨', 0.15);
+  drawSticker(ctx, width/2, height - 35, 22, '💕', 0);
+  drawSticker(ctx, 45, 45, 22, '😊', 0.1);
 }
 
 // Template 2: Grid 2x2
 function drawGrid2x2(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  ctx.fillStyle = '#fdf5e6';
+  ctx.fillStyle = '#fff8e7';
   ctx.fillRect(0, 0, width, height);
-  drawStars(ctx, width, height, 15);
-
+  
+  // Decorative background
+  const bg2 = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/1.5);
+  bg2.addColorStop(0, 'rgba(255,182,193,0.2)');
+  bg2.addColorStop(1, 'rgba(255,218,185,0.2)');
+  ctx.fillStyle = bg2;
+  ctx.fillRect(0,0,width,height);
+  
   const padding = 40;
-  const gap = 25;
-  const photoSize = (width - padding * 2 - gap) / 2;
-
+  const gap = 30;
+  const frameSize = (width - padding * 2 - gap) / 2;
+  
   for (let i = 0; i < Math.min(images.length, 4); i++) {
     const row = Math.floor(i / 2);
     const col = i % 2;
-    const x = padding + col * (photoSize + gap);
-    const y = padding + row * (photoSize + gap);
-
-    drawShadowFrame(ctx, x, y, photoSize, photoSize);
-    ctx.strokeStyle = `hsl(${i * 90}, 70%, 60%)`;
-    ctx.lineWidth = 4;
-    ctx.strokeRect(x + 5, y + 5, photoSize - 10, photoSize - 10);
-    drawImageCover(ctx, images[i], x + 10, y + 10, photoSize - 20, photoSize - 20);
+    const x = padding + col * (frameSize + gap);
+    const y = padding + row * (frameSize + gap);
+    
+    drawPhotoFrame(ctx, x, y, frameSize, frameSize, 10, 16);
+    drawImageCover(ctx, images[i], x + 14, y + 14, frameSize - 28, frameSize - 28);
   }
-
-  // Tambahkan stiker di sudut
-  drawCuteSticker(ctx, 30, 30, 30, '🌟');
-  drawCuteSticker(ctx, width - 30, 30, 30, '✨');
-  drawCuteSticker(ctx, 30, height - 30, 30, '💫');
-  drawCuteSticker(ctx, width - 30, height - 30, 30, '⭐');
+  
+  // Corner decorations
+  const cornerStickers = ['🌟','⭐','💫','✨'];
+  cornerStickers.forEach((s,i) => {
+    const cx = i%2===0 ? 35 : width-35;
+    const cy = i<2 ? 35 : height-35;
+    drawSticker(ctx, cx, cy, 32, s, (i-1.5)*0.2);
+  });
 }
 
-// Template 3: Polaroid 3 in a row
+// Template 3: Polaroid 3
 function drawPolaroid3(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  ctx.fillStyle = '#f8f8ff';
+  ctx.fillStyle = '#f0f8ff';
   ctx.fillRect(0, 0, width, height);
-  drawConfetti(ctx, width, height);
-
-  const padding = 30;
-  const gap = 25;
+  drawPolkaDotBackground(ctx, width, height, 'rgba(135,206,250,0.2)', 12, 45);
+  
+  const padding = 40;
+  const gap = 35;
   const polaroidWidth = (width - padding * 2 - gap * 2) / 3;
-  const polaroidHeight = polaroidWidth * 1.3;
+  const polaroidHeight = polaroidWidth * 1.4;
   const startY = (height - polaroidHeight) / 2;
-
+  
   for (let i = 0; i < Math.min(images.length, 3); i++) {
     const x = padding + i * (polaroidWidth + gap);
-    const y = startY + (i % 2 === 0 ? -15 : 15);
-
-    ctx.save();
-    const angle = (i - 1) * 0.05;
-    ctx.translate(x + polaroidWidth / 2, y + polaroidHeight / 2);
-    ctx.rotate(angle);
-    ctx.translate(-polaroidWidth / 2, -polaroidHeight / 2);
-
-    drawShadowFrame(ctx, 0, 0, polaroidWidth, polaroidHeight);
+    const y = startY + (i === 1 ? 20 : (i === 0 ? -15 : -10));
     
-    const photoSize = polaroidWidth - 20;
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(10, 10, photoSize, photoSize);
-    drawImageCover(ctx, images[i], 10, 10, photoSize, photoSize);
-
+    ctx.save();
+    ctx.translate(x + polaroidWidth/2, y + polaroidHeight/2);
+    ctx.rotate((i - 1) * 0.08);
+    ctx.translate(-polaroidWidth/2, -polaroidHeight/2);
+    
+    // Polaroid frame
+    ctx.shadowColor = 'rgba(0,0,0,0.35)';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 8;
+    ctx.shadowOffsetY = 8;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0,0,polaroidWidth,polaroidHeight);
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    
+    ctx.strokeStyle = '#f5f5f5';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(3,3,polaroidWidth-6,polaroidHeight-6);
+    
+    const photoSize = polaroidWidth - 24;
+    const photoY = 16;
+    ctx.fillStyle = '#333';
+    ctx.fillRect(12, photoY, photoSize, photoSize);
+    drawImageCover(ctx, images[i], 14, photoY + 2, photoSize - 4, photoSize - 4);
+    
     ctx.restore();
   }
-
-  // Tambahkan stiker lucu
-  const stickers = ['📸', '💕', '😊'];
-  for (let i = 0; i < 3; i++) {
-    drawCuteSticker(ctx, 50 + i * 200, height - 40, 35, stickers[i]);
-  }
+  
+  // Bottom stickers
+  drawSticker(ctx, width/2, height - 30, 30, '🎉', 0);
+  drawSticker(ctx, 50, height - 35, 26, '📸', -0.15);
+  drawSticker(ctx, width - 50, height - 35, 26, '🎈', 0.15);
 }
 
 // Template 4: Film Strip
 function drawFilmStrip(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#1a1a2e';
   ctx.fillRect(0, 0, width, height);
-  drawStars(ctx, width, height, 12);
-
-  const padding = 30;
-  const photoWidth = (width - padding * 2) / 5;
-  const photoHeight = height - padding * 2;
-
-  // Perforasi film
-  ctx.fillStyle = '#0f0f1e';
-  for (let i = 0; i < 20; i++) {
-    ctx.fillRect(padding - 10, padding + i * (photoHeight / 20), 8, 8);
-    ctx.fillRect(width - padding + 2, padding + i * (photoHeight / 20), 8, 8);
+  
+  const padding = 40;
+  const frameWidth = (width - padding * 2) / 5;
+  const frameHeight = height - padding * 2;
+  
+  // Film perforations
+  ctx.fillStyle = '#0f0f1a';
+  for (let i = 0; i < 12; i++) {
+    const y = padding + i * (frameHeight / 11);
+    ctx.fillRect(padding - 14, y, 10, 10);
+    ctx.fillRect(width - padding + 4, y, 10, 10);
   }
-
+  
   for (let i = 0; i < Math.min(images.length, 5); i++) {
-    const x = padding + i * photoWidth;
+    const x = padding + i * frameWidth;
     const y = padding;
     
     ctx.fillStyle = '#2d2d44';
-    ctx.fillRect(x + 5, y, photoWidth - 10, photoHeight);
-    drawImageCover(ctx, images[i], x + 10, y + 10, photoWidth - 20, photoHeight - 20);
+    ctx.fillRect(x + 6, y, frameWidth - 12, frameHeight);
+    drawImageCover(ctx, images[i], x + 12, y + 8, frameWidth - 24, frameHeight - 16);
   }
-
-  // Tambahkan stiker film
-  drawCuteSticker(ctx, 50, 35, 30, '🎬');
-  drawCuteSticker(ctx, width - 50, 35, 30, '🎞️');
+  
+  // Film reel decorations
+  drawSticker(ctx, 35, height/2, 35, '🎬', 0);
+  drawSticker(ctx, width - 35, height/2, 35, '🎞️', 0);
 }
 
 // Template 5: Heart Shape
 function drawHeartShape(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  const bg = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
+  const bg = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/1.5);
   bg.addColorStop(0, '#fff0f5');
+  bg.addColorStop(0.5, '#ffd6e0');
   bg.addColorStop(1, '#ffb6c1');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, width, height);
-  drawPolkaDotBackground(ctx, width, height, 'rgba(255,255,255,0.4)', 8, 30);
-
+  drawPolkaDotBackground(ctx, width, height, 'rgba(255,255,255,0.35)', 8, 32);
+  
+  const centerX = width/2;
+  const centerY = height/2;
   const positions = [
-    { x: width/2 - 90, y: height/2 - 120, size: 80 },
-    { x: width/2 + 10, y: height/2 - 120, size: 80 },
-    { x: width/2 - 140, y: height/2 - 40, size: 80 },
-    { x: width/2 - 45, y: height/2 - 40, size: 80 },
-    { x: width/2 + 55, y: height/2 - 40, size: 80 },
-    { x: width/2 - 95, y: height/2 + 40, size: 80 },
-    { x: width/2 + 5, y: height/2 + 40, size: 80 },
-    { x: width/2 - 45, y: height/2 + 100, size: 80 },
+    { x: centerX - 80, y: centerY - 100, size: 70 },
+    { x: centerX + 10, y: centerY - 100, size: 70 },
+    { x: centerX - 130, y: centerY - 30, size: 70 },
+    { x: centerX - 40, y: centerY - 30, size: 70 },
+    { x: centerX + 50, y: centerY - 30, size: 70 },
+    { x: centerX - 90, y: centerY + 40, size: 70 },
+    { x: centerX + 0, y: centerY + 40, size: 70 },
+    { x: centerX - 40, y: centerY + 110, size: 70 },
   ];
-
+  
   for (let i = 0; i < Math.min(images.length, positions.length); i++) {
     const pos = positions[i];
+    // Circle frame
     ctx.beginPath();
-    ctx.arc(pos.x + pos.size/2, pos.y + pos.size/2, pos.size/2 + 5, 0, Math.PI * 2);
+    ctx.arc(pos.x + pos.size/2, pos.y + pos.size/2, pos.size/2 + 8, 0, Math.PI * 2);
     ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(0,0,0,0.25)';
+    ctx.shadowBlur = 12;
     ctx.fill();
+    ctx.shadowBlur = 0;
     
     ctx.beginPath();
     ctx.arc(pos.x + pos.size/2, pos.y + pos.size/2, pos.size/2, 0, Math.PI * 2);
@@ -325,64 +342,63 @@ function drawHeartShape(ctx: CanvasRenderingContext2D, images: HTMLImageElement[
     drawImageCover(ctx, images[i], pos.x, pos.y, pos.size, pos.size);
     ctx.restore();
   }
-
-  // Tambahkan hati kecil di sekeliling
-  const heartStickers = ['❤️', '💕', '💖', '💗'];
-  for (let i = 0; i < 6; i++) {
-    const angle = (i / 6) * Math.PI * 2;
-    const radius = 280;
-    const hx = width/2 + Math.cos(angle) * radius;
-    const hy = height/2 + Math.sin(angle) * radius;
-    drawCuteSticker(ctx, hx, hy, 35, heartStickers[i % heartStickers.length]);
-  }
+  
+  // Heart stickers around
+  const heartStickers = ['❤️','💕','💖','💗','💓','💘'];
+  heartStickers.forEach((s,i) => {
+    const angle = (i / heartStickers.length) * Math.PI * 2;
+    const r = 270;
+    drawSticker(ctx, centerX + Math.cos(angle)*r, centerY + Math.sin(angle)*r, 32, s, angle*0.3);
+  });
 }
 
 // Template 6: Diagonal
 function drawDiagonal(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  ctx.fillStyle = '#e6f3ff';
+  const bg = ctx.createLinearGradient(0, 0, width, height);
+  bg.addColorStop(0, '#e6f3ff');
+  bg.addColorStop(0.5, '#f0f9ff');
+  bg.addColorStop(1, '#e6f3ff');
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, width, height);
-  drawStars(ctx, width, height, 18);
-
-  const padding = 40;
-  const photoSize = 120;
+  
+  const padding = 50;
+  const frameSize = 110;
   const maxPhotos = 5;
-
+  
   for (let i = 0; i < Math.min(images.length, maxPhotos); i++) {
     const progress = i / (maxPhotos - 1);
-    const x = padding + progress * (width - padding * 2 - photoSize);
-    const y = padding + progress * (height - padding * 2 - photoSize);
+    const x = padding + progress * (width - padding * 2 - frameSize);
+    const y = padding + progress * (height - padding * 2 - frameSize);
     
     ctx.save();
-    ctx.translate(x + photoSize/2, y + photoSize/2);
-    ctx.rotate((i - 2) * 0.1);
-    ctx.translate(-photoSize/2, -photoSize/2);
-
-    drawShadowFrame(ctx, 0, 0, photoSize, photoSize);
-    drawImageCover(ctx, images[i], 10, 10, photoSize - 20, photoSize - 20);
+    ctx.translate(x + frameSize/2, y + frameSize/2);
+    ctx.rotate((i - 2) * 0.12);
+    ctx.translate(-frameSize/2, -frameSize/2);
+    
+    drawPhotoFrame(ctx, 0, 0, frameSize, frameSize, 9, 14);
+    drawImageCover(ctx, images[i], 13, 13, frameSize - 26, frameSize - 26);
     
     ctx.restore();
   }
-
-  // Tambahkan stiker random
-  const randomStickers = ['🌈', '☁️', '🌤️', '✨', '🦋'];
-  for (let i = 0; i < 4; i++) {
-    const rx = 30 + Math.random() * (width - 60);
-    const ry = 30 + Math.random() * (height - 60);
-    drawCuteSticker(ctx, rx, ry, 30, randomStickers[i]);
-  }
+  
+  // Cloud & rainbow stickers
+  drawSticker(ctx, 45, 45, 30, '☁️', -0.1);
+  drawSticker(ctx, width - 50, height - 45, 35, '🌈', 0.15);
+  drawSticker(ctx, width - 55, 50, 28, '☀️', 0.1);
+  drawSticker(ctx, 55, height - 50, 28, '🦋', -0.15);
 }
 
 // Template 7: Circle Grid
 function drawCircleGrid(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#f0fff4';
-  ctx.fillRect(0, 0, width, height);
-  drawPolkaDotBackground(ctx, width, height, 'rgba(152,251,152,0.3)', 12, 38);
-
-  const padding = 40;
-  const circleSize = 100;
-  const gap = 20;
-
-  const positions = [];
+  ctx.fillRect(0,0,width,height);
+  drawPolkaDotBackground(ctx, width, height, 'rgba(152,251,152,0.2)', 10, 40);
+  
+  const padding = 45;
+  const circleSize = 95;
+  const gap = 25;
+  
+  const positions: {x:number,y:number}[] = [];
   for (let row = 0; row < 3; row++) {
     for (let col = 0; col < 3; col++) {
       positions.push({
@@ -391,16 +407,20 @@ function drawCircleGrid(ctx: CanvasRenderingContext2D, images: HTMLImageElement[
       });
     }
   }
-
+  
   for (let i = 0; i < Math.min(images.length, positions.length); i++) {
     const pos = positions[i];
     const cx = pos.x + circleSize/2;
     const cy = pos.y + circleSize/2;
     
+    // Pastel circle background
     ctx.beginPath();
-    ctx.arc(cx, cy, circleSize/2 + 5, 0, Math.PI * 2);
+    ctx.arc(cx, cy, circleSize/2 + 10, 0, Math.PI * 2);
     ctx.fillStyle = `hsl(${i * 40 + 100}, 70%, 85%)`;
+    ctx.shadowColor = 'rgba(0,0,0,0.2)';
+    ctx.shadowBlur = 10;
     ctx.fill();
+    ctx.shadowBlur = 0;
     
     ctx.beginPath();
     ctx.arc(cx, cy, circleSize/2, 0, Math.PI * 2);
@@ -409,120 +429,147 @@ function drawCircleGrid(ctx: CanvasRenderingContext2D, images: HTMLImageElement[
     drawImageCover(ctx, images[i], pos.x, pos.y, circleSize, circleSize);
     ctx.restore();
   }
-
-  // Tambahkan stiker hijau
-  drawCuteSticker(ctx, 35, 35, 30, '🌿');
-  drawCuteSticker(ctx, width - 35, height - 35, 30, '🌱');
+  
+  // Leaf stickers
+  drawSticker(ctx, 35,35,32,'🌿',-0.15);
+  drawSticker(ctx, width-35, height-35,32,'🌱',0.15);
 }
 
 // Template 8: Retro 35mm
 function drawRetro35mm(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#2c1810';
-  ctx.fillRect(0, 0, width, height);
-
-  const padding = 50;
-  const photoWidth = (width - padding * 2 - 30) / 4;
-  const photoHeight = photoWidth * 0.7;
-  const centerY = height / 2 - photoHeight / 2;
-
-  // Retro border
-  ctx.fillStyle = '#ffcc00';
-  ctx.fillRect(padding - 5, centerY - 5, width - padding * 2 + 10, photoHeight + 10);
-
+  ctx.fillRect(0,0,width,height);
+  
+  const padding = 55;
+  const frameWidth = (width - padding * 2 - 30) / 4;
+  const frameHeight = frameWidth * 0.7;
+  const centerY = height/2 - frameHeight/2;
+  
+  // Retro yellow border
+  ctx.fillStyle = '#ffd700';
+  ctx.fillRect(padding - 8, centerY - 8, width - padding*2 + 16, frameHeight + 16);
+  
   for (let i = 0; i < Math.min(images.length, 4); i++) {
-    const x = padding + i * (photoWidth + 10);
+    const x = padding + i * (frameWidth + 10);
     const y = centerY;
     
     ctx.fillStyle = '#000000';
-    ctx.fillRect(x, y, photoWidth, photoHeight);
-    drawImageCover(ctx, images[i], x + 5, y + 5, photoWidth - 10, photoHeight - 10);
+    ctx.fillRect(x, y, frameWidth, frameHeight);
+    drawImageCover(ctx, images[i], x + 7, y + 7, frameWidth - 14, frameHeight - 14);
     
+    // Frame number
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 12px monospace';
+    ctx.font = 'bold 16px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(`${i + 1}`, x + photoWidth/2, y + photoHeight - 10);
+    ctx.fillText(`${i+1}`, x + frameWidth/2, y + frameHeight - 15);
   }
-
-  // Tambahkan stiker retro
-  drawCuteSticker(ctx, 40, centerY, 35, '🎸');
-  drawCuteSticker(ctx, width - 40, centerY, 35, '🎵');
+  
+  // Retro stickers
+  drawSticker(ctx, 40, centerY, 38, '🎸', 0);
+  drawSticker(ctx, width - 40, centerY, 38, '🎵', 0);
 }
 
 // Template 9: Polaroid Fun
 function drawPolaroidFun(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  ctx.fillStyle = '#fffaf0';
-  ctx.fillRect(0, 0, width, height);
-  drawConfetti(ctx, width, height);
-
-  const centerX = width / 2;
-  const centerY = height / 2;
-
+  const bg = ctx.createLinearGradient(0,0,width,height);
+  bg.addColorStop(0,'#fff5e6');
+  bg.addColorStop(0.5,'#fffaf0');
+  bg.addColorStop(1,'#fff5e6');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,width,height);
+  drawPolkaDotBackground(ctx, width, height, 'rgba(255,182,193,0.2)', 11, 42);
+  
+  const centerX = width/2;
+  const centerY = height/2;
+  
   const polaroids = [
-    { x: centerX - 160, y: centerY - 140, w: 140, h: 170, angle: -0.15 },
-    { x: centerX + 20, y: centerY - 130, w: 140, h: 170, angle: 0.12 },
-    { x: centerX - 100, y: centerY + 30, w: 140, h: 170, angle: 0.08 },
-    { x: centerX + 60, y: centerY + 40, w: 140, h: 170, angle: -0.1 },
+    { x: centerX - 165, y: centerY - 145, w: 135, h: 170, angle: -0.18 },
+    { x: centerX + 15, y: centerY - 135, w: 135, h: 170, angle: 0.15 },
+    { x: centerX - 105, y: centerY + 25, w: 135, h: 170, angle: 0.1 },
+    { x: centerX + 60, y: centerY + 35, w: 135, h: 170, angle: -0.12 },
   ];
-
+  
   for (let i = 0; i < Math.min(images.length, polaroids.length); i++) {
     const p = polaroids[i];
     ctx.save();
     ctx.translate(p.x + p.w/2, p.y + p.h/2);
     ctx.rotate(p.angle);
     ctx.translate(-p.w/2, -p.h/2);
-
-    drawShadowFrame(ctx, 0, 0, p.w, p.h);
     
-    const photoSize = p.w - 20;
-    drawImageCover(ctx, images[i], 10, 10, photoSize, photoSize);
-
+    // Polaroid
+    ctx.shadowColor = 'rgba(0,0,0,0.35)';
+    ctx.shadowBlur = 22;
+    ctx.shadowOffsetX = 10;
+    ctx.shadowOffsetY = 10;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0,0,p.w,p.h);
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    
+    ctx.strokeStyle = '#f0f0f0';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(3,3,p.w-6,p.h-6);
+    
+    const photoSize = p.w - 26;
+    ctx.fillStyle = '#333';
+    ctx.fillRect(13, 17, photoSize, photoSize);
+    drawImageCover(ctx, images[i], 15, 19, photoSize - 4, photoSize - 4);
+    
     ctx.restore();
   }
-
-  // Tambahkan stiker polaroid
-  const funStickers = ['📷', '🎀', '🎈', '🎉'];
-  for (let i = 0; i < 4; i++) {
-    const fx = 40 + (i % 2) * (width - 80);
-    const fy = 40 + Math.floor(i / 2) * (height - 80);
-    drawCuteSticker(ctx, fx, fy, 35, funStickers[i]);
-  }
+  
+  // Party stickers
+  const partyStickers = ['🎀','🎈','🎉','🎊'];
+  partyStickers.forEach((s,i) => {
+    const x = i%2===0 ? 45 : width-45;
+    const y = i<2 ? 45 : height-45;
+    drawSticker(ctx,x,y,34,s,(i-1.5)*0.25);
+  });
 }
 
 // Template 10: Flower
 function drawFlower(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  const bg = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
-  bg.addColorStop(0, '#fffacd');
-  bg.addColorStop(1, '#ffd700');
+  const bg = ctx.createRadialGradient(width/2,height/2,0,width/2,height/2,width/1.5);
+  bg.addColorStop(0,'#fffacd');
+  bg.addColorStop(1,'#ffd700');
   ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, width, height);
-
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const radius = 100;
-  const circleSize = 70;
-
+  ctx.fillRect(0,0,width,height);
+  
+  const centerX = width/2;
+  const centerY = height/2;
+  const radius = 105;
+  const circleSize = 75;
+  
   // Center photo
   ctx.beginPath();
-  ctx.arc(centerX, centerY, circleSize/2 + 5, 0, Math.PI * 2);
+  ctx.arc(centerX, centerY, circleSize/2 + 10, 0, Math.PI * 2);
   ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(0,0,0,0.25)';
+  ctx.shadowBlur = 15;
   ctx.fill();
+  ctx.shadowBlur = 0;
   ctx.beginPath();
   ctx.arc(centerX, centerY, circleSize/2, 0, Math.PI * 2);
   ctx.save();
   ctx.clip();
-  if (images[0]) drawImageCover(ctx, images[0], centerX - circleSize/2, centerY - circleSize/2, circleSize, circleSize);
+  if(images[0]) drawImageCover(ctx, images[0], centerX - circleSize/2, centerY - circleSize/2, circleSize, circleSize);
   ctx.restore();
-
+  
   // Petals
   for (let i = 1; i < Math.min(images.length, 7); i++) {
     const angle = ((i - 1) / 6) * Math.PI * 2;
     const x = centerX + Math.cos(angle) * radius;
     const y = centerY + Math.sin(angle) * radius;
-
+    
     ctx.beginPath();
-    ctx.arc(x, y, circleSize/2 + 5, 0, Math.PI * 2);
+    ctx.arc(x, y, circleSize/2 + 8, 0, Math.PI * 2);
     ctx.fillStyle = '#fff8dc';
+    ctx.shadowColor = 'rgba(0,0,0,0.2)';
+    ctx.shadowBlur = 10;
     ctx.fill();
+    ctx.shadowBlur = 0;
     
     ctx.beginPath();
     ctx.arc(x, y, circleSize/2, 0, Math.PI * 2);
@@ -531,117 +578,123 @@ function drawFlower(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], w
     drawImageCover(ctx, images[i], x - circleSize/2, y - circleSize/2, circleSize, circleSize);
     ctx.restore();
   }
-
-  // Tambahkan stiker bunga
-  const flowerStickers = ['🌸', '🌺', '🌻', '🌷', '🌹', '💐'];
-  for (let i = 0; i < 6; i++) {
-    const angle = (i / 6) * Math.PI * 2 + Math.PI / 6;
-    const r = 250;
-    drawCuteSticker(ctx, centerX + Math.cos(angle) * r, centerY + Math.sin(angle) * r, 40, flowerStickers[i]);
-  }
+  
+  // Flower stickers
+  const flowerStickers = ['🌸','🌺','🌻','🌷','🌹','💐'];
+  flowerStickers.forEach((s,i) => {
+    const angle = (i / flowerStickers.length) * Math.PI * 2 + Math.PI/6;
+    const r = 260;
+    drawSticker(ctx, centerX + Math.cos(angle)*r, centerY + Math.sin(angle)*r, 35, s, angle*0.25);
+  });
 }
 
 // Template 11: Vintage
 function drawVintage(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#f5f5dc';
-  ctx.fillRect(0, 0, width, height);
-  drawPolkaDotBackground(ctx, width, height, 'rgba(139,69,19,0.2)', 10, 40);
-
-  // Border vintage
+  ctx.fillRect(0,0,width,height);
+  drawPolkaDotBackground(ctx, width, height, 'rgba(139,69,19,0.18)', 10, 40);
+  
+  // Vintage border
   ctx.strokeStyle = '#8b4513';
-  ctx.lineWidth = 15;
-  ctx.strokeRect(20, 20, width - 40, height - 40);
-
-  const padding = 60;
-  const gap = 20;
-  const photoWidth = (width - padding * 2 - gap) / 2;
-  const photoHeight = (height - padding * 2 - gap) / 2;
-
+  ctx.lineWidth = 18;
+  ctx.strokeRect(15,15,width-30,height-30);
+  
+  ctx.strokeStyle = '#a0522d';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(30,30,width-60,height-60);
+  
+  const padding = 65;
+  const gap = 25;
+  const frameWidth = (width - padding * 2 - gap) / 2;
+  const frameHeight = (height - padding * 2 - gap) / 2;
+  
   for (let i = 0; i < Math.min(images.length, 4); i++) {
     const row = Math.floor(i / 2);
     const col = i % 2;
-    const x = padding + col * (photoWidth + gap);
-    const y = padding + row * (photoHeight + gap);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(x, y, photoWidth, photoHeight);
-    ctx.strokeStyle = '#d2b48c';
-    ctx.lineWidth = 8;
-    ctx.strokeRect(x + 5, y + 5, photoWidth - 10, photoHeight - 10);
-    drawImageCover(ctx, images[i], x + 15, y + 15, photoWidth - 30, photoHeight - 30);
+    const x = padding + col * (frameWidth + gap);
+    const y = padding + row * (frameHeight + gap);
+    
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, 12, 8);
+    drawImageCover(ctx, images[i], x + 16, y + 16, frameWidth - 32, frameHeight - 32);
   }
-
-  // Tambahkan stiker vintage
-  drawCuteSticker(ctx, 45, 45, 35, '☕');
-  drawCuteSticker(ctx, width - 45, 45, 35, '📜');
-  drawCuteSticker(ctx, 45, height - 45, 35, '🎞️');
-  drawCuteSticker(ctx, width - 45, height - 45, 35, '📻');
+  
+  // Vintage stickers
+  drawSticker(ctx, 50, 50, 35, '☕', -0.1);
+  drawSticker(ctx, width-50,50,35,'📜',0.1);
+  drawSticker(ctx,50,height-50,35,'🎞️',-0.1);
+  drawSticker(ctx,width-50,height-50,35,'📻',0.1);
 }
 
 // Template 12: Modern Minimal
 function drawModernMinimal(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#fafafa';
-  ctx.fillRect(0, 0, width, height);
-  drawStars(ctx, width, height, 10);
-
-  const padding = 40;
-  const gap = 15;
-  const photoHeight = (height - padding * 2 - gap * 3) / 4;
-  const photoWidth = width - padding * 2;
-
+  ctx.fillRect(0,0,width,height);
+  
+  // Subtle grid lines
+  ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+  ctx.lineWidth = 1;
+  for(let i=0;i<width;i+=40){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,height); ctx.stroke(); }
+  for(let i=0;i<height;i+=40){ ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(width,i); ctx.stroke(); }
+  
+  const padding = 45;
+  const gap = 20;
+  const frameHeight = (height - padding * 2 - gap * 3) / 4;
+  const frameWidth = width - padding * 2;
+  
   for (let i = 0; i < Math.min(images.length, 4); i++) {
     const x = padding;
-    const y = padding + i * (photoHeight + gap);
+    const y = padding + i * (frameHeight + gap);
     
+    // Minimalist frame
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(x, y, photoWidth, photoHeight);
-    drawImageCover(ctx, images[i], x, y, photoWidth, photoHeight);
+    ctx.shadowColor = 'rgba(0,0,0,0.1)';
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 4;
+    ctx.fillRect(x,y,frameWidth,frameHeight);
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
     
-    ctx.fillStyle = '#333333';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText(`0${i + 1}`, x + 15, y + 30);
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x+3,y+3,frameWidth-6,frameHeight-6);
+    
+    drawImageCover(ctx, images[i], x+6, y+6, frameWidth-12, frameHeight-12);
+    
+    // Frame number
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`0${i+1}`, x + 15, y + 38);
   }
-
-  // Tambahkan stiker minimal
-  const minStickers = ['✦', '◆', '●', '▲'];
-  for (let i = 0; i < 4; i++) {
-    drawCuteSticker(ctx, width - 35, padding + i * (photoHeight + gap) + photoHeight / 2, 25, minStickers[i]);
-  }
+  
+  // Minimalist decorations
+  const minStickers = ['✦','◆','●','▲'];
+  minStickers.forEach((s,i) => {
+    drawSticker(ctx, width - 40, padding + i*(frameHeight+gap) + frameHeight/2, 24, s, 0);
+  });
 }
 
 export async function buildPhotoboothStrip(
   frames: string[],
   template: PhotoboothTemplate,
 ) {
-  // Ukuran berdasarkan template
   let width = 600;
   let height = 900;
 
   switch (template) {
-    case 'classic-strip-4':
-      width = 400; height = 800; break;
-    case 'grid-2x2':
-      width = 700; height = 700; break;
-    case 'polaroid-3':
-      width = 900; height = 500; break;
-    case 'film-strip':
-      width = 900; height = 400; break;
-    case 'heart-shape':
-      width = 700; height = 700; break;
-    case 'diagonal':
-      width = 800; height = 600; break;
-    case 'circle-grid':
-      width = 700; height = 700; break;
-    case 'retro-35mm':
-      width = 900; height = 400; break;
-    case 'polaroid-fun':
-      width = 700; height = 700; break;
-    case 'flower':
-      width = 700; height = 700; break;
-    case 'vintage':
-      width = 700; height = 700; break;
-    case 'modern-minimal':
-      width = 500; height = 800; break;
+    case 'classic-strip-4': width = 420; height = 850; break;
+    case 'grid-2x2': width = 700; height = 700; break;
+    case 'polaroid-3': width = 900; height = 550; break;
+    case 'film-strip': width = 900; height = 420; break;
+    case 'heart-shape': width = 720; height = 720; break;
+    case 'diagonal': width = 820; height = 620; break;
+    case 'circle-grid': width = 720; height = 720; break;
+    case 'retro-35mm': width = 900; height = 420; break;
+    case 'polaroid-fun': width = 720; height = 720; break;
+    case 'flower': width = 720; height = 720; break;
+    case 'vintage': width = 720; height = 720; break;
+    case 'modern-minimal': width = 500; height = 880; break;
   }
 
   const canvas = document.createElement('canvas');
@@ -649,13 +702,10 @@ export async function buildPhotoboothStrip(
   canvas.height = height;
 
   const context = canvas.getContext('2d');
-  if (!context) {
-    return null;
-  }
+  if (!context) return null;
 
-  const images = await Promise.all(frames.map((frame) => loadImage(frame)));
+  const images = await Promise.all(frames.map(loadImage));
 
-  // Pilih template
   switch (template) {
     case 'classic-strip-4': drawClassicStrip4(context, images, width, height); break;
     case 'grid-2x2': drawGrid2x2(context, images, width, height); break;
@@ -675,11 +725,11 @@ export async function buildPhotoboothStrip(
   return canvas;
 }
 
-// Fungsi untuk membuat preview template (dengan gambar placeholder)
+// Template Preview
 export function buildTemplatePreview(template: PhotoboothTemplate): string {
   const canvas = document.createElement('canvas');
-  let width = 200;
-  let height = 280;
+  let width = 220;
+  let height = 300;
 
   switch (template) {
     case 'grid-2x2':
@@ -688,11 +738,11 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
     case 'polaroid-fun':
     case 'flower':
     case 'vintage':
-      width = 200; height = 200; break;
+      width = 220; height = 220; break;
     case 'polaroid-3':
     case 'film-strip':
     case 'retro-35mm':
-      width = 280; height = 130; break;
+      width = 300; height = 150; break;
   }
 
   canvas.width = width;
@@ -700,200 +750,201 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
   const ctx = canvas.getContext('2d');
   if (!ctx) return '';
 
-  // Draw placeholder background
-  const colors = ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', '#e0bbff'];
-  
-  // Create dummy images
-  const drawDummy = (x: number, y: number, w: number, h: number, colorIndex: number) => {
+  const colors = ['#ffb3ba','#ffdfba','#ffffba','#baffc9','#bae1ff','#e0bbff','#d4a5ff','#ffd4a3'];
+
+  const drawDummyPhoto = (x: number, y: number, w: number, h: number, colorIndex: number, isCircle: boolean = false) => {
     ctx.fillStyle = colors[colorIndex % colors.length];
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(x + 2, y + 2, w - 4, h - 4);
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = '10px sans-serif';
+    if(isCircle) {
+      ctx.beginPath();
+      ctx.arc(x + w/2, y + h/2, Math.min(w,h)/2, 0, Math.PI*2);
+      ctx.fill();
+    } else {
+      roundRect(ctx, x, y, w, h, 8);
+      ctx.fill();
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = `${Math.min(w,h)/3}px Arial`;
     ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     ctx.fillText('📷', x + w/2, y + h/2);
   };
 
-  // Draw tiny stickers for preview
-  const drawTinySticker = (x: number, y: number, sticker: string) => {
-    ctx.font = '12px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(sticker, x, y);
-  };
-
+  // Draw preview based on template
   switch (template) {
     case 'classic-strip-4': {
-      ctx.fillStyle = '#fff0f5';
-      ctx.fillRect(0, 0, width, height);
-      // Tiny polkadot
-      ctx.fillStyle = 'rgba(255,182,193,0.4)';
-      for(let i=0; i<20; i++){
-        ctx.beginPath();
-        ctx.arc(10 + Math.random()*180, 10 + Math.random()*260, 3, 0, Math.PI*2);
-        ctx.fill();
+      const bg = ctx.createLinearGradient(0,0,0,height);
+      bg.addColorStop(0,'#ffe4ec'); bg.addColorStop(1,'#ffc9da');
+      ctx.fillStyle = bg; ctx.fillRect(0,0,width,height);
+      drawPolkaDotBackground(ctx,width,height,'rgba(255,255,255,0.35)',7,28);
+      const pad = 20, gap = 18, fh = (height - pad*2 - gap*3)/4, fw = width - pad*2;
+      for(let i=0;i<4;i++) {
+        drawPhotoFrame(ctx, pad, pad + i*(fh+gap), fw, fh, 6, 10);
+        drawDummyPhoto(pad+8, pad+8+i*(fh+gap), fw-16, fh-16, i);
       }
-      for (let i = 0; i < 4; i++) {
-        const h = (height - 30) / 4;
-        drawDummy(15, 10 + i * (h + 5), width - 30, h - 5, i);
-      }
-      // Tiny stickers
-      drawTinySticker(30, 25, '❤️');
-      drawTinySticker(width-30, height-25, '✨');
+      drawSticker(ctx,30,height-25,20,'❤️',-0.15);
+      drawSticker(ctx,width-30,25,20,'✨',0.1);
       break;
     }
     case 'grid-2x2': {
-      ctx.fillStyle = '#fdf5e6';
-      ctx.fillRect(0, 0, width, height);
-      // Tiny stars
-      ['✨','⭐'].forEach((s,i)=>drawTinySticker(30+i*140, 30, s));
-      const s = (width - 30) / 2;
-      [[0,0],[1,0],[0,1],[1,1]].forEach(([c, r], i) => {
-        drawDummy(10 + c * (s + 10), 10 + r * (s + 10), s, s, i);
+      ctx.fillStyle = '#fff8e7'; ctx.fillRect(0,0,width,height);
+      const pad = 25, gap = 20, fs = (width-pad*2 - gap)/2;
+      for(let i=0;i<4;i++) {
+        const r = Math.floor(i/2), c = i%2;
+        drawPhotoFrame(ctx, pad + c*(fs+gap), pad + r*(fs+gap), fs, fs,7,12);
+        drawDummyPhoto(pad+9 + c*(fs+gap), pad+9 + r*(fs+gap), fs-18, fs-18, i);
+      }
+      ['🌟','⭐','💫','✨'].forEach((s,i)=>{
+        const cx = i%2===0 ? 25 : width-25;
+        const cy = i<2 ? 25 : height-25;
+        drawSticker(ctx,cx,cy,22,s,(i-1.5)*0.2);
       });
-      drawTinySticker(width-30, height-30, '🌟');
       break;
     }
     case 'polaroid-3': {
-      ctx.fillStyle = '#f8f8ff';
-      ctx.fillRect(0, 0, width, height);
-      // Tiny confetti
-      const confettiColors = ['#ff69b4','#ffd700','#87ceeb','#98fb98'];
-      for(let i=0;i<10;i++){
-        ctx.fillStyle = confettiColors[i%4];
-        ctx.fillRect(20+Math.random()*240, 20+Math.random()*90, 4, 4);
+      ctx.fillStyle = '#f0f8ff'; ctx.fillRect(0,0,width,height);
+      drawPolkaDotBackground(ctx,width,height,'rgba(135,206,250,0.2)',9,35);
+      const pad = 25, gap = 20, pw = (width-pad*2 - gap*2)/3, ph = pw*1.4;
+      const sy = (height-ph)/2;
+      for(let i=0;i<3;i++) {
+        const x = pad + i*(pw+gap);
+        const y = sy + (i===1?12:(i===0?-10:-8));
+        ctx.save(); ctx.translate(x+pw/2,y+ph/2); ctx.rotate((i-1)*0.07); ctx.translate(-pw/2,-ph/2);
+        ctx.fillStyle = '#fff'; ctx.fillRect(0,0,pw,ph);
+        const ps = pw-20;
+        drawDummyPhoto(10,14,ps,ps,i);
+        ctx.restore();
       }
-      const pw = (width - 30) / 3;
-      for (let i = 0; i < 3; i++) {
-        drawDummy(10 + i * (pw + 5), 20, pw, height - 40, i);
-      }
-      drawTinySticker(width-20, 25, '📷');
+      drawSticker(ctx,width/2,height-22,24,'🎉',0);
       break;
     }
     case 'film-strip': {
-      ctx.fillStyle = '#1a1a2e';
-      ctx.fillRect(0, 0, width, height);
-      // Tiny stars
-      drawTinySticker(25, 25, '🎬');
-      const fw = (width - 30) / 5;
-      for (let i = 0; i < 5; i++) {
-        drawDummy(15 + i * fw, 15, fw - 5, height - 30, i);
+      ctx.fillStyle = '#1a1a2e'; ctx.fillRect(0,0,width,height);
+      const pad = 30, fw = (width-pad*2)/5, fh = height-pad*2;
+      for(let i=0;i<5;i++) {
+        const x = pad + i*fw;
+        ctx.fillStyle = '#2d2d44'; ctx.fillRect(x+4,pad,fw-8,fh);
+        drawDummyPhoto(x+8, pad+6, fw-16, fh-12, i);
       }
-      drawTinySticker(width-25, 25, '🎞️');
+      drawSticker(ctx,28,height/2,28,'🎬',0);
+      drawSticker(ctx,width-28,height/2,28,'🎞️',0);
       break;
     }
     case 'heart-shape': {
-      const bg = ctx.createRadialGradient(width/2,height/2,0,width/2,height/2,width/2);
-      bg.addColorStop(0,'#fff0f5');
-      bg.addColorStop(1,'#ffb6c1');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0,0,width,height);
-      drawDummy(60, 40, 40, 40, 0);
-      drawDummy(100, 40, 40, 40, 1);
-      drawDummy(40, 80, 40, 40, 2);
-      drawDummy(80, 80, 40, 40, 3);
-      drawDummy(120, 80, 40, 40, 4);
-      drawDummy(60, 120, 40, 40, 5);
-      drawDummy(100, 120, 40, 40, 0);
-      // Tiny hearts
-      ['❤️','💕','💖'].forEach((s,i)=>drawTinySticker(20+i*80, 20, s));
+      const bg = ctx.createRadialGradient(width/2,height/2,0,width/2,height/2,width/1.5);
+      bg.addColorStop(0,'#fff0f5'); bg.addColorStop(1,'#ffb6c1');
+      ctx.fillStyle = bg; ctx.fillRect(0,0,width,height);
+      drawPolkaDotBackground(ctx,width,height,'rgba(255,255,255,0.3)',6,28);
+      const cx=width/2, cy=height/2;
+      const pos=[{x:cx-60,y:cy-70,s:50},{x:cx+10,y:cy-70,s:50},{x:cx-95,y:cy-20,s:50},{x:cx-30,y:cy-20,s:50},{x:cx+35,y:cy-20,s:50},{x:cx-65,y:cy+30,s:50},{x:cx+5,y:cy+30,s:50},{x:cx-30,y:cy+80,s:50}];
+      pos.forEach((p,i)=>{
+        ctx.beginPath(); ctx.arc(p.x+p.s/2,p.y+p.s/2,p.s/2+5,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+        drawDummyPhoto(p.x,p.y,p.s,p.s,i,true);
+      });
+      ['❤️','💕','💖'].forEach((s,i)=>drawSticker(ctx,22+i*70,22,18,s,0));
       break;
     }
     case 'diagonal': {
-      ctx.fillStyle = '#e6f3ff';
-      ctx.fillRect(0, 0, width, height);
-      drawTinySticker(30,30,'☁️');
-      for (let i = 0; i < 5; i++) {
-        const p = i / 4;
-        drawDummy(10 + p * 120, 10 + p * 120, 50, 50, i);
+      const bg = ctx.createLinearGradient(0,0,width,height);
+      bg.addColorStop(0,'#e6f3ff'); bg.addColorStop(1,'#f0f9ff');
+      ctx.fillStyle = bg; ctx.fillRect(0,0,width,height);
+      const pad=35, fs=85;
+      for(let i=0;i<5;i++) {
+        const p = i/4, x=pad+p*(width-pad*2 - fs), y=pad+p*(height-pad*2 - fs);
+        ctx.save(); ctx.translate(x+fs/2,y+fs/2); ctx.rotate((i-2)*0.1); ctx.translate(-fs/2,-fs/2);
+        drawPhotoFrame(ctx,0,0,fs,fs,6,10);
+        drawDummyPhoto(9,9,fs-18,fs-18,i);
+        ctx.restore();
       }
-      drawTinySticker(width-30,height-30,'🌈');
+      drawSticker(ctx,30,30,22,'☁️',-0.1);
+      drawSticker(ctx,width-35,height-30,24,'🌈',0.12);
       break;
     }
     case 'circle-grid': {
-      ctx.fillStyle = '#f0fff4';
-      ctx.fillRect(0, 0, width, height);
-      drawTinySticker(25,25,'🌿');
-      for (let i = 0; i < 9; i++) {
-        const r = Math.floor(i / 3), c = i % 3;
-        const x = 15 + c * 60, y = 15 + r * 60;
-        ctx.beginPath();
-        ctx.arc(x + 25, y + 25, 27, 0, Math.PI * 2);
-        ctx.fillStyle = colors[i % colors.length];
-        ctx.fill();
+      ctx.fillStyle = '#f0fff4'; ctx.fillRect(0,0,width,height);
+      drawPolkaDotBackground(ctx,width,height,'rgba(152,251,152,0.2)',7,32);
+      const pad=30, cs=70, gap=18;
+      for(let r=0;r<3;r++) for(let c=0;c<3;c++) {
+        const i=r*3+c, x=pad + c*(cs+gap), y=pad + r*(cs+gap);
+        ctx.beginPath(); ctx.arc(x+cs/2,y+cs/2,cs/2+6,0,Math.PI*2);
+        ctx.fillStyle = `hsl(${i*40+100},70%,85%)`; ctx.fill();
+        drawDummyPhoto(x,y,cs,cs,i,true);
       }
-      drawTinySticker(width-25,height-25,'🌱');
+      drawSticker(ctx,28,28,24,'🌿',-0.1);
+      drawSticker(ctx,width-28,height-28,24,'🌱',0.1);
       break;
     }
     case 'retro-35mm': {
-      ctx.fillStyle = '#2c1810';
-      ctx.fillRect(0, 0, width, height);
-      drawTinySticker(30,height/2,'🎸');
-      const rw = (width - 40) / 4;
-      for (let i = 0; i < 4; i++) {
-        drawDummy(20 + i * (rw + 5), 30, rw - 5, height - 60, i);
+      ctx.fillStyle = '#2c1810'; ctx.fillRect(0,0,width,height);
+      const pad=38, fw=(width-pad*2 - 25)/4, fh=fw*0.7, cy=height/2 - fh/2;
+      ctx.fillStyle='#ffd700'; ctx.fillRect(pad-6, cy-6, width-pad*2 +12, fh+12);
+      for(let i=0;i<4;i++) {
+        const x=pad + i*(fw+8);
+        ctx.fillStyle='#000'; ctx.fillRect(x,cy,fw,fh);
+        drawDummyPhoto(x+5, cy+5, fw-10, fh-10, i);
       }
-      drawTinySticker(width-30,height/2,'🎵');
+      drawSticker(ctx,28,height/2,28,'🎸',0);
+      drawSticker(ctx,width-28,height/2,28,'🎵',0);
       break;
     }
     case 'polaroid-fun': {
-      ctx.fillStyle = '#fffaf0';
-      ctx.fillRect(0, 0, width, height);
-      const funStickers = ['🎀','🎈','🎉'];
-      drawTinySticker(25,25,funStickers[0]);
-      const pSize = 70;
-      [[40, 30], [100, 40], [60, 100], [110, 110]].forEach(([x, y], i) => {
-        drawDummy(x, y, pSize, pSize, i);
+      const bg=ctx.createLinearGradient(0,0,width,height);
+      bg.addColorStop(0,'#fff5e6'); bg.addColorStop(1,'#fffaf0');
+      ctx.fillStyle=bg; ctx.fillRect(0,0,width,height);
+      drawPolkaDotBackground(ctx,width,height,'rgba(255,182,193,0.2)',8,35);
+      const cx=width/2, cy=height/2;
+      const pols = [
+        {x:cx-108,y:cy-92,w:90,h:112,a:-0.15},
+        {x:cx+12,y:cy-85,w:90,h:112,a:0.12},
+        {x:cx-70,y:cy+18,w:90,h:112,a:0.08},
+        {x:cx+40,y:cy+25,w:90,h:112,a:-0.1}
+      ];
+      pols.forEach((p,i)=>{
+        ctx.save(); ctx.translate(p.x+p.w/2,p.y+p.h/2); ctx.rotate(p.a); ctx.translate(-p.w/2,-p.h/2);
+        ctx.fillStyle='#fff'; ctx.fillRect(0,0,p.w,p.h);
+        drawDummyPhoto(9,12,p.w-18,p.w-18,i);
+        ctx.restore();
       });
-      drawTinySticker(width-25,height-25,funStickers[2]);
+      ['🎀','🎈'].forEach((s,i)=>drawSticker(ctx,30+i*(width-60),30,24,s,(i-0.5)*0.2));
       break;
     }
     case 'flower': {
-      const bg = ctx.createRadialGradient(width/2,height/2,0,width/2,height/2,width/2);
-      bg.addColorStop(0,'#fffacd');
-      bg.addColorStop(1,'#ffd700');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0,0,width,height);
-      drawDummy(80, 80, 40, 40, 0); // center
-      for (let i = 0; i < 6; i++) {
-        const a = (i / 6) * Math.PI * 2;
-        const x = 100 + Math.cos(a) * 50;
-        const y = 100 + Math.sin(a) * 50;
-        drawDummy(x - 20, y - 20, 40, 40, i + 1);
+      const bg=ctx.createRadialGradient(width/2,height/2,0,width/2,height/2,width/1.5);
+      bg.addColorStop(0,'#fffacd'); bg.addColorStop(1,'#ffd700');
+      ctx.fillStyle=bg; ctx.fillRect(0,0,width,height);
+      const cx=width/2, cy=height/2, r=75, cs=55;
+      ctx.beginPath(); ctx.arc(cx,cy,cs/2+6,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+      drawDummyPhoto(cx-cs/2, cy-cs/2, cs, cs,0,true);
+      for(let i=1;i<7;i++) {
+        const a=(i-1)/6*Math.PI*2, x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r;
+        ctx.beginPath(); ctx.arc(x,y,cs/2+5,0,Math.PI*2); ctx.fillStyle='#fff8dc'; ctx.fill();
+        drawDummyPhoto(x-cs/2, y-cs/2, cs, cs,i,true);
       }
-      // Tiny flower stickers
-      const flowerStickers = ['🌸','🌺','🌻'];
-      flowerStickers.forEach((s,i)=>drawTinySticker(30+i*70, 25, s));
+      ['🌸','🌺','🌻'].forEach((s,i)=>drawSticker(ctx,28+i*70,26,22,s,0));
       break;
     }
     case 'vintage': {
-      ctx.fillStyle = '#f5f5dc';
-      ctx.fillRect(0, 0, width, height);
-      ctx.strokeStyle = '#8b4513'; ctx.lineWidth = 5; ctx.strokeRect(10, 10, width-20, height-20);
-      // Tiny polkadot vintage
-      ctx.fillStyle = 'rgba(139,69,19,0.2)';
-      for(let i=0;i<15;i++){
-        ctx.beginPath();
-        ctx.arc(20+Math.random()*160,20+Math.random()*160, 3,0,Math.PI*2);
-        ctx.fill();
+      ctx.fillStyle='#f5f5dc'; ctx.fillRect(0,0,width,height);
+      drawPolkaDotBackground(ctx,width,height,'rgba(139,69,19,0.15)',7,32);
+      ctx.strokeStyle='#8b4513'; ctx.lineWidth=14; ctx.strokeRect(12,12,width-24,height-24);
+      ctx.strokeStyle='#a0522d'; ctx.lineWidth=5; ctx.strokeRect(24,24,width-48,height-48);
+      const pad=45, gap=18, fw=(width-pad*2 - gap)/2, fh=(height-pad*2 - gap)/2;
+      for(let i=0;i<4;i++) {
+        const r=Math.floor(i/2), c=i%2, x=pad+c*(fw+gap), y=pad+r*(fh+gap);
+        drawPhotoFrame(ctx,x,y,fw,fh,9,6);
+        drawDummyPhoto(x+12,y+12,fw-24,fh-24,i);
       }
-      const vs = (width - 35) / 2;
-      [[0,0],[1,0],[0,1],[1,1]].forEach(([c, r], i) => {
-        drawDummy(15 + c * (vs + 5), 15 + r * (vs + 5), vs, vs, i);
-      });
-      drawTinySticker(30,30,'☕');
+      drawSticker(ctx,35,35,24,'☕',-0.1);
       break;
     }
     case 'modern-minimal': {
-      ctx.fillStyle = '#fafafa';
-      ctx.fillRect(0, 0, width, height);
-      drawTinySticker(width-25,40,'✦');
-      const mh = (height - 30) / 4;
-      for (let i = 0; i < 4; i++) {
-        drawDummy(15, 10 + i * (mh + 5), width - 30, mh - 5, i);
+      ctx.fillStyle='#fafafa'; ctx.fillRect(0,0,width,height);
+      const pad=30, gap=15, fh=(height-pad*2 - gap*3)/4, fw=width-pad*2;
+      for(let i=0;i<4;i++) {
+        const x=pad, y=pad + i*(fh+gap);
+        ctx.fillStyle='#fff'; ctx.fillRect(x,y,fw,fh);
+        drawDummyPhoto(x+5,y+5,fw-10,fh-10,i);
       }
+      ['✦','◆','●','▲'].forEach((s,i)=>drawSticker(ctx,width-28, pad+i*(fh+gap)+fh/2, 18,s,0));
       break;
     }
   }
