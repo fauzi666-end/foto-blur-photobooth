@@ -101,37 +101,19 @@ function drawDotsBackground(
   size: number = 6
 ) {
   ctx.fillStyle = color;
-  for (let y = 0; y < height; y += size * 4) {
-    for (let x = 0; x < width; x += size * 4) {
+  for (let row = 0; row < height/size + 2; row++) {
+    for (let col = 0; col < width/size + 2; col++) {
+      const offsetX = (row % 2) * (size * 2);
       ctx.beginPath();
-      ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+      ctx.arc(col * size * 4 + offsetX, row * size * 4, size / 2, 0, Math.PI * 2);
       ctx.fill();
     }
   }
 }
 
-function drawStarBackground(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  color: string
-) {
-  ctx.fillStyle = color;
-  const stars = [
-    [20, 20], [width - 30, 30], [width / 2, 25],
-    [40, height - 40], [width - 50, height - 30],
-  ];
-  stars.forEach(([x, y]) => {
-    ctx.font = '16px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('★', x, y);
-  });
-}
-
 function drawClassicStrip4(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   const bg = ctx.createLinearGradient(0, 0, 0, height);
-  bg.addColorStop(0, '#fff0f5);
+  bg.addColorStop(0, '#fff0f5');
   bg.addColorStop(1, '#ffe4ec');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, width, height);
@@ -148,10 +130,6 @@ function drawClassicStrip4(ctx: CanvasRenderingContext2D, images: HTMLImageEleme
     drawPhotoFrame(ctx, x, y, frameWidth, frameHeight);
     drawImageCover(ctx, images[i], x + 12, y + 12, frameWidth - 24, frameHeight - 24);
   }
-  
-  ['❤️', '✨', '💕', '😊'].forEach((s, i) => {
-    drawStarBackground(ctx, width, height, 'rgba(244, 114, 182, 0.3)');
-  });
 }
 
 function drawClassicStrip3(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
@@ -167,7 +145,7 @@ function drawClassicStrip3(ctx: CanvasRenderingContext2D, images: HTMLImageEleme
   for (let i = 0; i < Math.min(images.length, 3); i++) {
     const x = padding;
     const y = padding + i * (frameHeight + gap);
-    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#fff');
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#ffffff');
     drawImageCover(ctx, images[i], x + 12, y + 12, frameWidth - 24, frameHeight - 24);
   }
 }
@@ -211,7 +189,7 @@ function drawPolaroidStrip(ctx: CanvasRenderingContext2D, images: HTMLImageEleme
     ctx.rotate((i - 1) * 0.08);
     ctx.translate(-polaroidWidth/2, -polaroidHeight/2);
     
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#ffffff';
     ctx.shadowColor = 'rgba(0,0,0,0.25)';
     ctx.shadowBlur = 12;
     ctx.shadowOffsetY = 5;
@@ -239,21 +217,11 @@ function drawFilmStripSimple(ctx: CanvasRenderingContext2D, images: HTMLImageEle
   for (let i = 0; i < Math.min(images.length, 4); i++) {
     const x = padding + i * frameWidth;
     const y = padding;
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = '#000000';
     ctx.beginPath();
     ctx.roundRect(x + 5, y + 5, frameWidth - 10, frameHeight - 10, 6);
     ctx.fill();
     drawImageCover(ctx, images[i], x + 10, y + 10, frameWidth - 20, frameHeight - 20);
-  }
-  
-  for (let i = 0; i < 10; i++) {
-    ctx.fillStyle = '#000';
-    ctx.beginPath();
-    ctx.arc(15 + i * (frameWidth/2), height/2, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(width - 15 - i * (frameWidth/2), height/2, 4, 0, Math.PI * 2);
-    ctx.fill();
   }
 }
 
@@ -286,8 +254,8 @@ function drawPolaroidFunky(ctx: CanvasRenderingContext2D, images: HTMLImageEleme
   const sizes = [
     { x: padding, y: 40, w: 200, h: 200, r: -0.1 },
     { x: width/2 - 90, y: 70, w: 180, h: 180, r: 0.08 },
-    { x: width - 220, y: height - 240, w: 180, h: 180, r: -0.06 },
-    { x: 60, y: height - 250, w: 190, h: 190, r: 0.12 }
+    { x: width - 220, y: height - 240, w: 180, h: 180, r: -0.05 },
+    { x: 60, y: height - 250, w: 190, h: 190, r: 0.09 }
   ];
   
   for (let i = 0; i < Math.min(images.length, 4); i++) {
@@ -318,18 +286,9 @@ function drawHeartStrip(ctx: CanvasRenderingContext2D, images: HTMLImageElement[
   for (let i = 0; i < Math.min(images.length, 4); i++) {
     const x = padding;
     const y = padding + i * (frameHeight + gap);
-    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#fff');
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#ffffff');
     drawImageCover(ctx, images[i], x + 12, y + 12, frameWidth - 24, frameHeight - 24);
   }
-  
-  const hearts = ['❤️', '💕', '💖', '💗', '💘', '💓'];
-  hearts.forEach((s, i) => {
-    const angle = (i / hearts.length) * Math.PI * 2;
-    const r = 100;
-    const cx = width/2 + Math.cos(angle) * r;
-    const cy = height/2 + Math.sin(angle) * r;
-    drawStarBackground(ctx, width, height, 'rgba(244, 114, 182, 0.25)');
-  });
 }
 
 function drawRetroPink(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
@@ -350,7 +309,7 @@ function drawRetroPink(ctx: CanvasRenderingContext2D, images: HTMLImageElement[]
     const col = i % 2;
     const x = padding + col * (frameWidth + gap);
     const y = padding + row * (frameHeight + gap);
-    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#fff');
+    drawPhotoFrame(ctx, x, y, frameWidth, frameHeight, '#ffffff');
     drawImageCover(ctx, images[i], x + 14, y + 14, frameWidth - 28, frameHeight - 28);
   }
 }
@@ -366,7 +325,7 @@ function drawFlowerFrame(ctx: CanvasRenderingContext2D, images: HTMLImageElement
   
   ctx.beginPath();
   ctx.arc(centerX, centerY, circleSize/2 + 10, 0, Math.PI * 2);
-  ctx.fillStyle = '#fff';
+  ctx.fillStyle = '#ffffff';
   ctx.fill();
   ctx.beginPath();
   ctx.arc(centerX, centerY, circleSize/2, 0, Math.PI * 2);
@@ -381,7 +340,7 @@ function drawFlowerFrame(ctx: CanvasRenderingContext2D, images: HTMLImageElement
     const y = centerY + Math.sin(angle) * radius;
     ctx.beginPath();
     ctx.arc(x, y, circleSize/2 + 8, 0, Math.PI * 2);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#ffffff';
     ctx.fill();
     ctx.beginPath();
     ctx.arc(x, y, circleSize/2, 0, Math.PI * 2);
@@ -437,7 +396,7 @@ function drawPolaroidParty(ctx: CanvasRenderingContext2D, images: HTMLImageEleme
     ctx.translate(x + polaroidWidth/2, y + polaroidHeight/2);
     ctx.rotate((i - 1.5) * 0.09);
     ctx.translate(-polaroidWidth/2, -polaroidHeight/2);
-    drawPhotoFrame(ctx, 0, 0, polaroidWidth, polaroidHeight, '#fff');
+    drawPhotoFrame(ctx, 0, 0, polaroidWidth, polaroidHeight, '#ffffff');
     drawImageCover(ctx, images[i], 12, 14, polaroidWidth - 24, polaroidWidth - 24);
     ctx.restore();
   }
@@ -526,7 +485,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
     ctx.roundRect(x, y, w, h, 10);
     ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.font = `${Math.min(w, h)/4}px Arial';
+    ctx.font = `${Math.min(w, h)/4}px Arial`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('📷', x + w/2, y + h/2);
@@ -541,7 +500,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       ctx.fillRect(0, 0, width, height);
       const pad1 = 15, gap1 = 12, fw1 = width - pad1*2, fh1 = (height - pad1*2 - gap1*3)/4;
       for (let i = 0; i < 4; i++) {
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath();
         ctx.roundRect(pad1, pad1 + i*(fh1 + gap1), fw1, fh1, 8);
         ctx.fill();
@@ -554,7 +513,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       ctx.fillRect(0, 0, width, height);
       const pad2 = 15, gap2 = 12, fw2 = width - pad2*2, fh2 = (height - pad2*2 - gap2*2)/3;
       for (let i = 0; i < 3; i++) {
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath();
         ctx.roundRect(pad2, pad2 + i*(fh2 + gap2), fw2, fh2, 8);
         ctx.fill();
@@ -568,7 +527,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       const pad3 = 15, gap3 = 10, fs3 = (width - pad3*2 - gap3)/2;
       for (let i = 0; i < 4; i++) {
         const r = Math.floor(i / 2), c = i % 2;
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath();
         ctx.roundRect(pad3 + c*(fs3 + gap3), pad3 + r*(fs3 + gap3), fs3, fs3, 8);
         ctx.fill();
@@ -587,7 +546,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
         ctx.translate(x + pw4/2, y + ph4/2);
         ctx.rotate((i - 1) * 0.06);
         ctx.translate(-pw4/2, -ph4/2);
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath();
         ctx.roundRect(0, 0, pw4, ph4, 6);
         ctx.fill();
@@ -602,7 +561,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       ctx.fillRect(0, 0, width, height);
       const pad5 = 15, fw5 = (width - pad5*2)/4, fh5 = height - pad5*2;
       for (let i = 0; i < 4; i++) {
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = '#000000';
         ctx.beginPath();
         ctx.roundRect(pad5 + i*fw5 + 4, pad5 + 4, fw5 - 8, fh5 - 8, 4);
         ctx.fill();
@@ -619,7 +578,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       ctx.fillRect(0, 0, width, height);
       const pad6 = 15, gap6 = 12, fw6 = width - pad6*2, fh6 = (height - pad6*2 - gap6*3)/4;
       for (let i = 0; i < 4; i++) {
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath();
         ctx.roundRect(pad6, pad6 + i*(fh6 + gap6), fw6, fh6, 8);
         ctx.fill();
@@ -659,7 +618,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       ctx.fillRect(0,0,width,height);
       const pad8 =15, gap8=12, fw8=width-pad8*2, fh8=(height-pad8*2 - gap8*3)/4;
       for (let i=0; i<4; i++) {
-        ctx.fillStyle='#fff';
+        ctx.fillStyle='#ffffff';
         ctx.beginPath();
         ctx.roundRect(pad8, pad8+i*(fh8+gap8), fw8, fh8,8);
         ctx.fill();
@@ -672,12 +631,12 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       bg9.addColorStop(0,'#fecaca');
       bg9.addColorStop(0.5,'#fed7aa');
       bg9.addColorStop(1,'#fef3c7');
-      ctx.fillStyle=bg9;
+      ctx.fillStyle = bg9;
       ctx.fillRect(0,0,width,height);
       const pad9=15, gap9=10, fs9=(width-pad9*2 - gap9)/2, fh9=(height-pad9*2 - gap9)/2;
       for (let i=0; i<4; i++) {
         const r=Math.floor(i/2), c=i%2;
-        ctx.fillStyle='#fff';
+        ctx.fillStyle='#ffffff';
         ctx.beginPath();
         ctx.roundRect(pad9 + c*(fs9+gap9), pad9 + r*(fh9+gap9), fs9, fh9,8);
         ctx.fill();
@@ -689,7 +648,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       ctx.fillStyle='#fdf2f8';
       ctx.fillRect(0,0,width,height);
       const cx10=width/2, cy10=height/2, r10=60, cs10=40;
-      ctx.fillStyle='#fff';
+      ctx.fillStyle='#ffffff';
       ctx.beginPath();
       ctx.arc(cx10, cy10, cs10/2+4, 0, Math.PI*2);
       ctx.fill();
@@ -698,7 +657,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
         const a = (i-1)/6*Math.PI*2;
         const x=cx10 + Math.cos(a)*r10;
         const y=cy10 + Math.sin(a)*r10;
-        ctx.fillStyle='#fff';
+        ctx.fillStyle='#ffffff';
         ctx.beginPath();
         ctx.arc(x,y,cs10/2+3,0,Math.PI*2);
         ctx.fill();
@@ -729,7 +688,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       const bg12 = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/1.5);
       bg12.addColorStop(0,'#fef3c7');
       bg12.addColorStop(1,'#fed7aa');
-      ctx.fillStyle=bg12;
+      ctx.fillStyle = bg12;
       ctx.fillRect(0,0,width,height);
       const pad12=12, gap12=8, pw12=(width-pad12*2 - gap12*3)/4, ph12=pw12*1.35;
       for (let i=0; i<4; i++) {
@@ -739,7 +698,7 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
         ctx.translate(x+pw12/2, y+ph12/2);
         ctx.rotate((i-1.5)*0.07);
         ctx.translate(-pw12/2, -ph12/2);
-        ctx.fillStyle='#fff';
+        ctx.fillStyle='#ffffff';
         ctx.beginPath();
         ctx.roundRect(0,0,pw12,ph12,6);
         ctx.fill();
