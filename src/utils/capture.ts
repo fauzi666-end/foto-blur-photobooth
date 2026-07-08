@@ -99,7 +99,7 @@ function drawConfetti(
     ctx.rotate(rotation);
     ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
     ctx.beginPath();
-    ctx.roundRect(-size/2, -size/2, size, size * 0.6, 1);
+    ctx.roundRect(-size / 2, -size / 2, size, size * 0.6, 1);
     ctx.fill();
     ctx.restore();
   }
@@ -112,9 +112,6 @@ function drawHearts(
   height: number
 ) {
   ctx.save();
-  ctx.font = '28px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
   const hearts = ['❤️', '💕', '💗', '💖', '🩷', '🤍'];
   for (let i = 0; i < 18; i++) {
     const x = Math.random() * width;
@@ -125,6 +122,8 @@ function drawHearts(
     ctx.translate(x, y);
     ctx.rotate(rotation);
     ctx.font = `${size}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     ctx.fillText(hearts[Math.floor(Math.random() * hearts.length)], 0, 0);
     ctx.restore();
   }
@@ -200,7 +199,7 @@ function drawCoquettePink(ctx: CanvasRenderingContext2D, images: HTMLImageElemen
 function drawRetroFilm(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#1a1a1a';
   ctx.fillRect(0, 0, width, height);
-  
+
   ctx.fillStyle = '#2d2d2d';
   for (let i = 0; i < 12; i++) {
     const x = 15 + i * (width / 11);
@@ -325,7 +324,7 @@ function drawBirthdayParty(ctx: CanvasRenderingContext2D, images: HTMLImageEleme
 
 export async function buildPhotoboothStrip(
   frames: string[],
-  template: PhotoboothTemplate,
+  template: PhotoboothTemplate
 ) {
   const width = 450;
   const height = 1125;
@@ -340,13 +339,26 @@ export async function buildPhotoboothStrip(
   const images = await Promise.all(frames.map(loadImage));
 
   switch (template) {
-    case 'coquette-pink': drawCoquettePink(context, images, width, height); break;
-    case 'retro-film': drawRetroFilm(context, images, width, height); break;
-    case 'pastel-dream': drawPastelDream(context, images, width, height); break;
-    case 'starry-night': drawStarryNight(context, images, width, height); break;
-    case 'love-heart': drawLoveHeart(context, images, width, height); break;
-    case 'birthday-party': drawBirthdayParty(context, images, width, height); break;
-    default: drawCoquettePink(context, images, width, height); break;
+    case 'coquette-pink':
+      drawCoquettePink(context, images, width, height);
+      break;
+    case 'retro-film':
+      drawRetroFilm(context, images, width, height);
+      break;
+    case 'pastel-dream':
+      drawPastelDream(context, images, width, height);
+      break;
+    case 'starry-night':
+      drawStarryNight(context, images, width, height);
+      break;
+    case 'love-heart':
+      drawLoveHeart(context, images, width, height);
+      break;
+    case 'birthday-party':
+      drawBirthdayParty(context, images, width, height);
+      break;
+    default:
+      drawCoquettePink(context, images, width, height);
   }
 
   return canvas;
@@ -370,10 +382,10 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
     ctx.roundRect(x, y, w, h, 8);
     ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = `${Math.min(w, h)/3.5}px Arial';
+    ctx.font = `${Math.min(w, h) / 3.5}px Arial`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('📸', x + w/2, y + h/2);
+    ctx.fillText('📸', x + w / 2, y + h / 2);
   };
 
   switch (template) {
