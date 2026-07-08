@@ -25,11 +25,18 @@ const TEMPLATES: {
   desc: string;
   recommendedFrames: number;
 }[] = [
-  { value: 'classic-strip-4', label: 'Classic Strip 4', desc: 'Strip vertikal 4 frame (photobooth asli)', recommendedFrames: 4 },
+  { value: 'classic-strip-4', label: 'Classic Strip 4', desc: 'Strip vertikal 4 frame dengan background pink', recommendedFrames: 4 },
   { value: 'classic-strip-3', label: 'Classic Strip 3', desc: 'Strip vertikal 3 frame', recommendedFrames: 3 },
-  { value: 'square-grid-2x2', label: 'Square Grid 2x2', desc: 'Layout kotak 4 frame', recommendedFrames: 4 },
+  { value: 'square-grid-2x2', label: 'Square Grid', desc: 'Layout kotak 4 frame', recommendedFrames: 4 },
   { value: 'polaroid-strip', label: 'Polaroid Strip', desc: '3 polaroid bersebelahan', recommendedFrames: 3 },
   { value: 'film-strip-simple', label: 'Film Strip', desc: 'Seperti gulungan film', recommendedFrames: 4 },
+  { value: 'pastel-dream', label: 'Pastel Dream', desc: 'Background gradient pastel', recommendedFrames: 4 },
+  { value: 'polaroid-funky', label: 'Polaroid Funky', desc: 'Polaroid berwarna-warni', recommendedFrames: 4 },
+  { value: 'heart-strip', label: 'Heart Strip', desc: 'Strip dengan tema hati', recommendedFrames: 4 },
+  { value: 'retro-pink', label: 'Retro Pink', desc: 'Tema retro pink', recommendedFrames: 4 },
+  { value: 'flower-frame', label: 'Flower Frame', desc: 'Layout seperti bunga', recommendedFrames: 7 },
+  { value: 'neon-border', label: 'Neon Border', desc: 'Border neon modern', recommendedFrames: 4 },
+  { value: 'polaroid-party', label: 'Polaroid Party', desc: '4 polaroid bergoyang', recommendedFrames: 4 },
 ];
 
 export default function PhotoboothPage() {
