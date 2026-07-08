@@ -1,6 +1,6 @@
-# React + TypeScript + Vite
+# Foto Blur Photobooth
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikasi web kamera interaktif dengan 12 template kolase photobooth lucu!
 
 Currently, two official plugins are available:
 
