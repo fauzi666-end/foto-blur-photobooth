@@ -85,14 +85,85 @@ function drawShadowFrame(
   ctx.shadowOffsetY = 0;
 }
 
+// Helper untuk menggambar stiker emoji lucu
+function drawCuteSticker(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  sticker: string
+) {
+  ctx.font = `${size}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(sticker, x, y);
+}
+
+// Helper untuk menggambar polka dot background
+function drawPolkaDotBackground(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  dotColor: string = 'rgba(255,105,180,0.3)',
+  dotSize: number = 15,
+  spacing: number = 40
+) {
+  for (let x = 0; x < width; x += spacing) {
+    for (let y = 0; y < height; y += spacing) {
+      ctx.beginPath();
+      ctx.arc(x + (y % spacing === 0 ? spacing / 2 : 0), y, dotSize, 0, Math.PI * 2);
+      ctx.fillStyle = dotColor;
+      ctx.fill();
+    }
+  }
+}
+
+// Helper untuk menggambar bintang-bintang kecil
+function drawStars(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  count: number = 20
+) {
+  const stars = ['✨', '⭐', '🌟', '💫'];
+  for (let i = 0; i < count; i++) {
+    const x = Math.random() * width;
+    const y = Math.random() * height;
+    const size = 12 + Math.random() * 10;
+    const star = stars[Math.floor(Math.random() * stars.length)];
+    drawCuteSticker(ctx, x, y, size, star);
+  }
+}
+
+// Helper untuk menggambar confetti
+function drawConfetti(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number
+) {
+  const colors = ['#ff69b4', '#ffd700', '#87ceeb', '#98fb98', '#dda0dd'];
+  for (let i = 0; i < 30; i++) {
+    const x = Math.random() * width;
+    const y = Math.random() * height;
+    const size = 5 + Math.random() * 10;
+    ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(Math.random() * Math.PI);
+    ctx.fillRect(-size / 2, -size / 2, size, size * 0.6);
+    ctx.restore();
+  }
+}
+
 // Template 1: Classic 4x1 Strip (Photobooth Umumnya)
 function drawClassicStrip4(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
-  // Background gradient pink lembut
+  // Background gradient pink lembut + polka dot
   const bg = ctx.createLinearGradient(0, 0, 0, height);
   bg.addColorStop(0, '#fff0f5');
   bg.addColorStop(1, '#ffe4e1');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, width, height);
+  drawPolkaDotBackground(ctx, width, height, 'rgba(255,182,193,0.4)', 10, 35);
 
   const padding = 30;
   const gap = 20;
@@ -110,12 +181,21 @@ function drawClassicStrip4(ctx: CanvasRenderingContext2D, images: HTMLImageEleme
     ctx.strokeRect(x + 5, y + 5, photoWidth - 10, photoHeight - 10);
     drawImageCover(ctx, images[i], x + 10, y + 10, photoWidth - 20, photoHeight - 20);
   }
+
+  // Tambahkan stiker lucu di pinggir
+  const stickers = ['❤️', '😊', '✨', '🌸', '🎉'];
+  for (let i = 0; i < 5; i++) {
+    const sx = 20 + Math.random() * (width - 40);
+    const sy = 20 + Math.random() * (height - 40);
+    drawCuteSticker(ctx, sx, sy, 25, stickers[i]);
+  }
 }
 
 // Template 2: Grid 2x2
 function drawGrid2x2(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#fdf5e6';
   ctx.fillRect(0, 0, width, height);
+  drawStars(ctx, width, height, 15);
 
   const padding = 40;
   const gap = 25;
@@ -133,12 +213,19 @@ function drawGrid2x2(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], 
     ctx.strokeRect(x + 5, y + 5, photoSize - 10, photoSize - 10);
     drawImageCover(ctx, images[i], x + 10, y + 10, photoSize - 20, photoSize - 20);
   }
+
+  // Tambahkan stiker di sudut
+  drawCuteSticker(ctx, 30, 30, 30, '🌟');
+  drawCuteSticker(ctx, width - 30, 30, 30, '✨');
+  drawCuteSticker(ctx, 30, height - 30, 30, '💫');
+  drawCuteSticker(ctx, width - 30, height - 30, 30, '⭐');
 }
 
 // Template 3: Polaroid 3 in a row
 function drawPolaroid3(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#f8f8ff';
   ctx.fillRect(0, 0, width, height);
+  drawConfetti(ctx, width, height);
 
   const padding = 30;
   const gap = 25;
@@ -165,12 +252,19 @@ function drawPolaroid3(ctx: CanvasRenderingContext2D, images: HTMLImageElement[]
 
     ctx.restore();
   }
+
+  // Tambahkan stiker lucu
+  const stickers = ['📸', '💕', '😊'];
+  for (let i = 0; i < 3; i++) {
+    drawCuteSticker(ctx, 50 + i * 200, height - 40, 35, stickers[i]);
+  }
 }
 
 // Template 4: Film Strip
 function drawFilmStrip(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#1a1a2e';
   ctx.fillRect(0, 0, width, height);
+  drawStars(ctx, width, height, 12);
 
   const padding = 30;
   const photoWidth = (width - padding * 2) / 5;
@@ -191,6 +285,10 @@ function drawFilmStrip(ctx: CanvasRenderingContext2D, images: HTMLImageElement[]
     ctx.fillRect(x + 5, y, photoWidth - 10, photoHeight);
     drawImageCover(ctx, images[i], x + 10, y + 10, photoWidth - 20, photoHeight - 20);
   }
+
+  // Tambahkan stiker film
+  drawCuteSticker(ctx, 50, 35, 30, '🎬');
+  drawCuteSticker(ctx, width - 50, 35, 30, '🎞️');
 }
 
 // Template 5: Heart Shape
@@ -200,6 +298,7 @@ function drawHeartShape(ctx: CanvasRenderingContext2D, images: HTMLImageElement[
   bg.addColorStop(1, '#ffb6c1');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, width, height);
+  drawPolkaDotBackground(ctx, width, height, 'rgba(255,255,255,0.4)', 8, 30);
 
   const positions = [
     { x: width/2 - 90, y: height/2 - 120, size: 80 },
@@ -226,12 +325,23 @@ function drawHeartShape(ctx: CanvasRenderingContext2D, images: HTMLImageElement[
     drawImageCover(ctx, images[i], pos.x, pos.y, pos.size, pos.size);
     ctx.restore();
   }
+
+  // Tambahkan hati kecil di sekeliling
+  const heartStickers = ['❤️', '💕', '💖', '💗'];
+  for (let i = 0; i < 6; i++) {
+    const angle = (i / 6) * Math.PI * 2;
+    const radius = 280;
+    const hx = width/2 + Math.cos(angle) * radius;
+    const hy = height/2 + Math.sin(angle) * radius;
+    drawCuteSticker(ctx, hx, hy, 35, heartStickers[i % heartStickers.length]);
+  }
 }
 
 // Template 6: Diagonal
 function drawDiagonal(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#e6f3ff';
   ctx.fillRect(0, 0, width, height);
+  drawStars(ctx, width, height, 18);
 
   const padding = 40;
   const photoSize = 120;
@@ -252,12 +362,21 @@ function drawDiagonal(ctx: CanvasRenderingContext2D, images: HTMLImageElement[],
     
     ctx.restore();
   }
+
+  // Tambahkan stiker random
+  const randomStickers = ['🌈', '☁️', '🌤️', '✨', '🦋'];
+  for (let i = 0; i < 4; i++) {
+    const rx = 30 + Math.random() * (width - 60);
+    const ry = 30 + Math.random() * (height - 60);
+    drawCuteSticker(ctx, rx, ry, 30, randomStickers[i]);
+  }
 }
 
 // Template 7: Circle Grid
 function drawCircleGrid(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#f0fff4';
   ctx.fillRect(0, 0, width, height);
+  drawPolkaDotBackground(ctx, width, height, 'rgba(152,251,152,0.3)', 12, 38);
 
   const padding = 40;
   const circleSize = 100;
@@ -290,6 +409,10 @@ function drawCircleGrid(ctx: CanvasRenderingContext2D, images: HTMLImageElement[
     drawImageCover(ctx, images[i], pos.x, pos.y, circleSize, circleSize);
     ctx.restore();
   }
+
+  // Tambahkan stiker hijau
+  drawCuteSticker(ctx, 35, 35, 30, '🌿');
+  drawCuteSticker(ctx, width - 35, height - 35, 30, '🌱');
 }
 
 // Template 8: Retro 35mm
@@ -319,12 +442,17 @@ function drawRetro35mm(ctx: CanvasRenderingContext2D, images: HTMLImageElement[]
     ctx.textAlign = 'center';
     ctx.fillText(`${i + 1}`, x + photoWidth/2, y + photoHeight - 10);
   }
+
+  // Tambahkan stiker retro
+  drawCuteSticker(ctx, 40, centerY, 35, '🎸');
+  drawCuteSticker(ctx, width - 40, centerY, 35, '🎵');
 }
 
 // Template 9: Polaroid Fun
 function drawPolaroidFun(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#fffaf0';
   ctx.fillRect(0, 0, width, height);
+  drawConfetti(ctx, width, height);
 
   const centerX = width / 2;
   const centerY = height / 2;
@@ -349,6 +477,14 @@ function drawPolaroidFun(ctx: CanvasRenderingContext2D, images: HTMLImageElement
     drawImageCover(ctx, images[i], 10, 10, photoSize, photoSize);
 
     ctx.restore();
+  }
+
+  // Tambahkan stiker polaroid
+  const funStickers = ['📷', '🎀', '🎈', '🎉'];
+  for (let i = 0; i < 4; i++) {
+    const fx = 40 + (i % 2) * (width - 80);
+    const fy = 40 + Math.floor(i / 2) * (height - 80);
+    drawCuteSticker(ctx, fx, fy, 35, funStickers[i]);
   }
 }
 
@@ -395,12 +531,21 @@ function drawFlower(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], w
     drawImageCover(ctx, images[i], x - circleSize/2, y - circleSize/2, circleSize, circleSize);
     ctx.restore();
   }
+
+  // Tambahkan stiker bunga
+  const flowerStickers = ['🌸', '🌺', '🌻', '🌷', '🌹', '💐'];
+  for (let i = 0; i < 6; i++) {
+    const angle = (i / 6) * Math.PI * 2 + Math.PI / 6;
+    const r = 250;
+    drawCuteSticker(ctx, centerX + Math.cos(angle) * r, centerY + Math.sin(angle) * r, 40, flowerStickers[i]);
+  }
 }
 
 // Template 11: Vintage
 function drawVintage(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#f5f5dc';
   ctx.fillRect(0, 0, width, height);
+  drawPolkaDotBackground(ctx, width, height, 'rgba(139,69,19,0.2)', 10, 40);
 
   // Border vintage
   ctx.strokeStyle = '#8b4513';
@@ -425,12 +570,19 @@ function drawVintage(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], 
     ctx.strokeRect(x + 5, y + 5, photoWidth - 10, photoHeight - 10);
     drawImageCover(ctx, images[i], x + 15, y + 15, photoWidth - 30, photoHeight - 30);
   }
+
+  // Tambahkan stiker vintage
+  drawCuteSticker(ctx, 45, 45, 35, '☕');
+  drawCuteSticker(ctx, width - 45, 45, 35, '📜');
+  drawCuteSticker(ctx, 45, height - 45, 35, '🎞️');
+  drawCuteSticker(ctx, width - 45, height - 45, 35, '📻');
 }
 
 // Template 12: Modern Minimal
 function drawModernMinimal(ctx: CanvasRenderingContext2D, images: HTMLImageElement[], width: number, height: number) {
   ctx.fillStyle = '#fafafa';
   ctx.fillRect(0, 0, width, height);
+  drawStars(ctx, width, height, 10);
 
   const padding = 40;
   const gap = 15;
@@ -448,6 +600,12 @@ function drawModernMinimal(ctx: CanvasRenderingContext2D, images: HTMLImageEleme
     ctx.fillStyle = '#333333';
     ctx.font = 'bold 14px sans-serif';
     ctx.fillText(`0${i + 1}`, x + 15, y + 30);
+  }
+
+  // Tambahkan stiker minimal
+  const minStickers = ['✦', '◆', '●', '▲'];
+  for (let i = 0; i < 4; i++) {
+    drawCuteSticker(ctx, width - 35, padding + i * (photoHeight + gap) + photoHeight / 2, 25, minStickers[i]);
   }
 }
 
