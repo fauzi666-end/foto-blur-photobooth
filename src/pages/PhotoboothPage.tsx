@@ -31,6 +31,12 @@ const TEMPLATES: {
   { value: 'starry-night', label: 'Starry Night', desc: '🌙 Strip malam dengan bintang-bintang', recommendedFrames: 4 },
   { value: 'love-heart', label: 'Love Heart', desc: '💕 Strip dengan tema cinta', recommendedFrames: 4 },
   { value: 'birthday-party', label: 'Birthday Party', desc: '🎂 Strip ulang tahun yang meriah', recommendedFrames: 4 },
+  { value: 'y2k-aesthetic', label: 'Y2K Aesthetic', desc: '💿 Estetika tahun 2000-an', recommendedFrames: 4 },
+  { value: 'vintage-polaroid', label: 'Vintage Polaroid', desc: '📸 Polaroid dengan nuansa vintage', recommendedFrames: 4 },
+  { value: 'neon-glow', label: 'Neon Glow', desc: '✨ Strip dengan efek neon', recommendedFrames: 4 },
+  { value: 'kawaii-japanese', label: 'Kawaii Japanese', desc: '🐱 Estetika Jepang yang imut', recommendedFrames: 4 },
+  { value: 'beach-vibes', label: 'Beach Vibes', desc: '🏖️ Nuansa pantai yang santai', recommendedFrames: 4 },
+  { value: 'disco-party', label: 'Disco Party', desc: '💃 Strip dengan tema disco', recommendedFrames: 4 },
 ];
 
 export default function PhotoboothPage() {
