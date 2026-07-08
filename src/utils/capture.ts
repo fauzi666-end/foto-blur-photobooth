@@ -716,46 +716,80 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
     ctx.fillText('📷', x + w/2, y + h/2);
   };
 
+  // Draw tiny stickers for preview
+  const drawTinySticker = (x: number, y: number, sticker: string) => {
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(sticker, x, y);
+  };
+
   switch (template) {
     case 'classic-strip-4': {
       ctx.fillStyle = '#fff0f5';
       ctx.fillRect(0, 0, width, height);
+      // Tiny polkadot
+      ctx.fillStyle = 'rgba(255,182,193,0.4)';
+      for(let i=0; i<20; i++){
+        ctx.beginPath();
+        ctx.arc(10 + Math.random()*180, 10 + Math.random()*260, 3, 0, Math.PI*2);
+        ctx.fill();
+      }
       for (let i = 0; i < 4; i++) {
         const h = (height - 30) / 4;
         drawDummy(15, 10 + i * (h + 5), width - 30, h - 5, i);
       }
+      // Tiny stickers
+      drawTinySticker(30, 25, '❤️');
+      drawTinySticker(width-30, height-25, '✨');
       break;
     }
     case 'grid-2x2': {
       ctx.fillStyle = '#fdf5e6';
       ctx.fillRect(0, 0, width, height);
+      // Tiny stars
+      ['✨','⭐'].forEach((s,i)=>drawTinySticker(30+i*140, 30, s));
       const s = (width - 30) / 2;
       [[0,0],[1,0],[0,1],[1,1]].forEach(([c, r], i) => {
         drawDummy(10 + c * (s + 10), 10 + r * (s + 10), s, s, i);
       });
+      drawTinySticker(width-30, height-30, '🌟');
       break;
     }
     case 'polaroid-3': {
       ctx.fillStyle = '#f8f8ff';
       ctx.fillRect(0, 0, width, height);
+      // Tiny confetti
+      const confettiColors = ['#ff69b4','#ffd700','#87ceeb','#98fb98'];
+      for(let i=0;i<10;i++){
+        ctx.fillStyle = confettiColors[i%4];
+        ctx.fillRect(20+Math.random()*240, 20+Math.random()*90, 4, 4);
+      }
       const pw = (width - 30) / 3;
       for (let i = 0; i < 3; i++) {
         drawDummy(10 + i * (pw + 5), 20, pw, height - 40, i);
       }
+      drawTinySticker(width-20, 25, '📷');
       break;
     }
     case 'film-strip': {
       ctx.fillStyle = '#1a1a2e';
       ctx.fillRect(0, 0, width, height);
+      // Tiny stars
+      drawTinySticker(25, 25, '🎬');
       const fw = (width - 30) / 5;
       for (let i = 0; i < 5; i++) {
         drawDummy(15 + i * fw, 15, fw - 5, height - 30, i);
       }
+      drawTinySticker(width-25, 25, '🎞️');
       break;
     }
     case 'heart-shape': {
-      ctx.fillStyle = '#ffb6c1';
-      ctx.fillRect(0, 0, width, height);
+      const bg = ctx.createRadialGradient(width/2,height/2,0,width/2,height/2,width/2);
+      bg.addColorStop(0,'#fff0f5');
+      bg.addColorStop(1,'#ffb6c1');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0,0,width,height);
       drawDummy(60, 40, 40, 40, 0);
       drawDummy(100, 40, 40, 40, 1);
       drawDummy(40, 80, 40, 40, 2);
@@ -763,20 +797,25 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
       drawDummy(120, 80, 40, 40, 4);
       drawDummy(60, 120, 40, 40, 5);
       drawDummy(100, 120, 40, 40, 0);
+      // Tiny hearts
+      ['❤️','💕','💖'].forEach((s,i)=>drawTinySticker(20+i*80, 20, s));
       break;
     }
     case 'diagonal': {
       ctx.fillStyle = '#e6f3ff';
       ctx.fillRect(0, 0, width, height);
+      drawTinySticker(30,30,'☁️');
       for (let i = 0; i < 5; i++) {
         const p = i / 4;
         drawDummy(10 + p * 120, 10 + p * 120, 50, 50, i);
       }
+      drawTinySticker(width-30,height-30,'🌈');
       break;
     }
     case 'circle-grid': {
       ctx.fillStyle = '#f0fff4';
       ctx.fillRect(0, 0, width, height);
+      drawTinySticker(25,25,'🌿');
       for (let i = 0; i < 9; i++) {
         const r = Math.floor(i / 3), c = i % 3;
         const x = 15 + c * 60, y = 15 + r * 60;
@@ -785,29 +824,38 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
         ctx.fillStyle = colors[i % colors.length];
         ctx.fill();
       }
+      drawTinySticker(width-25,height-25,'🌱');
       break;
     }
     case 'retro-35mm': {
       ctx.fillStyle = '#2c1810';
       ctx.fillRect(0, 0, width, height);
+      drawTinySticker(30,height/2,'🎸');
       const rw = (width - 40) / 4;
       for (let i = 0; i < 4; i++) {
         drawDummy(20 + i * (rw + 5), 30, rw - 5, height - 60, i);
       }
+      drawTinySticker(width-30,height/2,'🎵');
       break;
     }
     case 'polaroid-fun': {
       ctx.fillStyle = '#fffaf0';
       ctx.fillRect(0, 0, width, height);
+      const funStickers = ['🎀','🎈','🎉'];
+      drawTinySticker(25,25,funStickers[0]);
       const pSize = 70;
       [[40, 30], [100, 40], [60, 100], [110, 110]].forEach(([x, y], i) => {
         drawDummy(x, y, pSize, pSize, i);
       });
+      drawTinySticker(width-25,height-25,funStickers[2]);
       break;
     }
     case 'flower': {
-      ctx.fillStyle = '#ffd700';
-      ctx.fillRect(0, 0, width, height);
+      const bg = ctx.createRadialGradient(width/2,height/2,0,width/2,height/2,width/2);
+      bg.addColorStop(0,'#fffacd');
+      bg.addColorStop(1,'#ffd700');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0,0,width,height);
       drawDummy(80, 80, 40, 40, 0); // center
       for (let i = 0; i < 6; i++) {
         const a = (i / 6) * Math.PI * 2;
@@ -815,21 +863,33 @@ export function buildTemplatePreview(template: PhotoboothTemplate): string {
         const y = 100 + Math.sin(a) * 50;
         drawDummy(x - 20, y - 20, 40, 40, i + 1);
       }
+      // Tiny flower stickers
+      const flowerStickers = ['🌸','🌺','🌻'];
+      flowerStickers.forEach((s,i)=>drawTinySticker(30+i*70, 25, s));
       break;
     }
     case 'vintage': {
       ctx.fillStyle = '#f5f5dc';
       ctx.fillRect(0, 0, width, height);
       ctx.strokeStyle = '#8b4513'; ctx.lineWidth = 5; ctx.strokeRect(10, 10, width-20, height-20);
+      // Tiny polkadot vintage
+      ctx.fillStyle = 'rgba(139,69,19,0.2)';
+      for(let i=0;i<15;i++){
+        ctx.beginPath();
+        ctx.arc(20+Math.random()*160,20+Math.random()*160, 3,0,Math.PI*2);
+        ctx.fill();
+      }
       const vs = (width - 35) / 2;
       [[0,0],[1,0],[0,1],[1,1]].forEach(([c, r], i) => {
         drawDummy(15 + c * (vs + 5), 15 + r * (vs + 5), vs, vs, i);
       });
+      drawTinySticker(30,30,'☕');
       break;
     }
     case 'modern-minimal': {
       ctx.fillStyle = '#fafafa';
       ctx.fillRect(0, 0, width, height);
+      drawTinySticker(width-25,40,'✦');
       const mh = (height - 30) / 4;
       for (let i = 0; i < 4; i++) {
         drawDummy(15, 10 + i * (mh + 5), width - 30, mh - 5, i);
